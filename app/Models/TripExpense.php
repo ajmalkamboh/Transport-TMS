@@ -112,3 +112,4 @@ class TripExpense extends Model
         return $this->status === self::STATUS_APPROVED;
     }
 }
+

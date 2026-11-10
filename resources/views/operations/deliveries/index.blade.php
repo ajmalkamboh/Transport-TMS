@@ -7,3 +7,4 @@
     @livewire('operations.delivery-manager')
 </div>
 @endsection
+

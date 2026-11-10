@@ -280,3 +280,4 @@ class WorkshopManager extends Component
         ]);
     }
 }
+

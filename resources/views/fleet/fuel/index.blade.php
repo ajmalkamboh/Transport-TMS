@@ -7,3 +7,4 @@
     @livewire('fleet.fuel-manager')
 </div>
 @endsection
+

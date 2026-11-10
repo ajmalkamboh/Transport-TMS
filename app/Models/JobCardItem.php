@@ -37,3 +37,4 @@ class JobCardItem extends Model
         return $this->belongsTo(JobCard::class);
     }
 }
+

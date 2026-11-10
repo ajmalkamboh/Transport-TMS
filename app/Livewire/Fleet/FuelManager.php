@@ -255,3 +255,4 @@ class FuelManager extends Component
         ]);
     }
 }
+

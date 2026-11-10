@@ -38,3 +38,4 @@ class FuelStation extends Model
         return $this->hasMany(FuelEntry::class);
     }
 }
+

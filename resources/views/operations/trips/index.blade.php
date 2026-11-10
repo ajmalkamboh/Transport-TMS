@@ -7,3 +7,4 @@
     @livewire('operations.trip-manager')
 </div>
 @endsection
+

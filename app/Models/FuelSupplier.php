@@ -53,3 +53,4 @@ class FuelSupplier extends Model
         return $this->hasMany(FuelEntry::class);
     }
 }
+

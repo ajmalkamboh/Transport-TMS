@@ -87,3 +87,4 @@ class VehicleComponent extends Model
         return false;
     }
 }
+

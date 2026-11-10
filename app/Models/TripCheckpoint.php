@@ -59,3 +59,4 @@ class TripCheckpoint extends Model
         $this->save();
     }
 }
+

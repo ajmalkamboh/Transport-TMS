@@ -104,3 +104,4 @@ class TripConsignment extends Model
         }
     }
 }
+

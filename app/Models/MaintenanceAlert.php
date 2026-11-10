@@ -65,3 +65,4 @@ class MaintenanceAlert extends Model
         $this->save();
     }
 }
+

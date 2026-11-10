@@ -195,3 +195,4 @@ return new class extends Migration
         Schema::dropIfExists('maintenance_schedules');
     }
 };
+

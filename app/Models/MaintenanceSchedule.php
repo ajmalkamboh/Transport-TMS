@@ -90,3 +90,4 @@ class MaintenanceSchedule extends Model
         return self::STATUS_ACTIVE;
     }
 }
+

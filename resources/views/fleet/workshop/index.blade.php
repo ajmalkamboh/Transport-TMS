@@ -7,3 +7,4 @@
     @livewire('fleet.workshop-manager')
 </div>
 @endsection
+
