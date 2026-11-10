@@ -83,5 +83,35 @@ class PrintDocumentController extends Controller
 
         return view('print.pod-receipt', compact('pod'));
     }
+
+    public function fuelSlip(int $id)
+    {
+        $fuelEntry = \App\Models\FuelEntry::withoutGlobalScopes()
+            ->with(['company', 'branch', 'supplier', 'station', 'card', 'vehicle', 'driver', 'trip', 'creator'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($fuelEntry);
+
+        return view('print.fuel-slip', compact('fuelEntry'));
+    }
+
+    public function expenseVoucher(int $id)
+    {
+        $expense = \App\Models\TripExpense::withoutGlobalScopes()
+            ->with(['company', 'branch', 'trip', 'vehicle', 'driver', 'recorder', 'approver', 'poster'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($expense);
+
+        return view('print.expense-voucher', compact('expense'));
+    }
+
+    public function jobCard(int $id)
+    {
+        $jobCard = \App\Models\JobCard::withoutGlobalScopes()
+            ->with(['company', 'branch', 'vehicle', 'driver', 'items', 'creator', 'completer'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($jobCard);
+
+        return view('print.job-card', compact('jobCard'));
+    }
 }
 

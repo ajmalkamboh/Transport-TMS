@@ -90,6 +90,18 @@
                                         <span class="nav-link-text ps-1">Document Expiries</span>
                                     </div>
                                 </a>
+                                <a class="nav-link {{ request()->routeIs('fleet.fuel*') ? 'active' : '' }}" href="{{ route('fleet.fuel') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-gas-pump"></span></span>
+                                        <span class="nav-link-text ps-1">Fuel Control & Cards</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('fleet.workshop*') ? 'active' : '' }}" href="{{ route('fleet.workshop') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-tools"></span></span>
+                                        <span class="nav-link-text ps-1">Workshop & Repairs</span>
+                                    </div>
+                                </a>
                             </li>
                             @endif
 
@@ -140,6 +152,12 @@
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><span class="fas fa-clipboard-check"></span></span>
                                         <span class="nav-link-text ps-1">Deliveries & POD</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('operations.expenses*') ? 'active' : '' }}" href="{{ route('operations.expenses') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-money-bill-wave"></span></span>
+                                        <span class="nav-link-text ps-1">Trip Expenses</span>
                                     </div>
                                 </a>
                             </li>

@@ -270,6 +270,46 @@ class Company extends Model
         return $this->hasMany(\App\Models\ProofOfDelivery::class);
     }
 
+    public function fuelSuppliers(): HasMany
+    {
+        return $this->hasMany(FuelSupplier::class);
+    }
+
+    public function fuelCards(): HasMany
+    {
+        return $this->hasMany(FuelCard::class);
+    }
+
+    public function fuelEntries(): HasMany
+    {
+        return $this->hasMany(FuelEntry::class);
+    }
+
+    public function tripExpenses(): HasMany
+    {
+        return $this->hasMany(TripExpense::class);
+    }
+
+    public function maintenanceSchedules(): HasMany
+    {
+        return $this->hasMany(MaintenanceSchedule::class);
+    }
+
+    public function jobCards(): HasMany
+    {
+        return $this->hasMany(JobCard::class);
+    }
+
+    public function vehicleComponents(): HasMany
+    {
+        return $this->hasMany(VehicleComponent::class);
+    }
+
+    public function maintenanceAlerts(): HasMany
+    {
+        return $this->hasMany(MaintenanceAlert::class);
+    }
+
     /**
      * Company financial years.
      */

@@ -41,6 +41,8 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/owners', fn() => view('fleet.owners.index'))->name('owners');
             Route::get('/drivers', fn() => view('fleet.drivers.index'))->name('drivers');
             Route::get('/alerts', fn() => view('fleet.alerts.index'))->name('alerts');
+            Route::get('/fuel', fn() => view('fleet.fuel.index'))->name('fuel');
+            Route::get('/workshop', fn() => view('fleet.workshop.index'))->name('workshop');
         });
 
         // Customer & Commercial Management (Quotations, Bookings, Consignments)
@@ -51,10 +53,11 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/consignments', fn() => view('commercial.consignments.index'))->name('consignments');
         });
 
-        // Operations Management (Trips, Dispatch, Route Checkpoints, Deliveries & POD)
+        // Operations Management (Trips, Dispatch, Route Checkpoints, Deliveries & Expenses)
         Route::prefix('operations')->name('operations.')->group(function () {
             Route::get('/trips', fn() => view('operations.trips.index'))->name('trips');
             Route::get('/deliveries', fn() => view('operations.deliveries.index'))->name('deliveries');
+            Route::get('/expenses', fn() => view('operations.expenses.index'))->name('expenses');
         });
 
         // Professional Document Printing Gateway
@@ -67,6 +70,9 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/loading-slip/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'loadingSlip'])->name('loading-slip');
             Route::get('/trip-sheet/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'tripSheet'])->name('trip-sheet');
             Route::get('/pod-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'podReceipt'])->name('pod-receipt');
+            Route::get('/fuel-slip/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'fuelSlip'])->name('fuel-slip');
+            Route::get('/expense-voucher/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'expenseVoucher'])->name('expense-voucher');
+            Route::get('/job-card/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'jobCard'])->name('job-card');
         });
 
         // Organizational Configuration & Settings

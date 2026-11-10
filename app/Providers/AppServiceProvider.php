@@ -122,6 +122,33 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(\App\Services\AuditLogService::class)
             );
         });
+
+        $this->app->singleton(\App\Services\FuelManagementService::class, function ($app) {
+            return new \App\Services\FuelManagementService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\TripExpenseService::class, function ($app) {
+            return new \App\Services\TripExpenseService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\VehicleMaintenanceService::class, function ($app) {
+            return new \App\Services\VehicleMaintenanceService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\AccountingIntegrationService::class, function ($app) {
+            return new \App\Services\AccountingIntegrationService(
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
     }
 
     /**

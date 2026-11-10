@@ -368,8 +368,8 @@ class CompanyBranchConfigurationTest extends TestCase
         $seqService = app(DocumentSequenceService::class);
         $year = (int) date('Y');
 
-        // All 11 document types
-        $types = array_keys(DocumentSequence::ALL_TYPES);
+        // All 11 core document types
+        $types = array_keys(DocumentSequence::CORE_ELEVEN_TYPES);
         $this->assertCount(11, $types);
 
         foreach ($types as $type) {

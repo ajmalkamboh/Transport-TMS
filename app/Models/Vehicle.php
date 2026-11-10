@@ -160,5 +160,35 @@ class Vehicle extends Model
     {
         return $this->status === self::STATUS_AVAILABLE;
     }
+
+    public function fuelEntries(): HasMany
+    {
+        return $this->hasMany(FuelEntry::class);
+    }
+
+    public function tripExpenses(): HasMany
+    {
+        return $this->hasMany(TripExpense::class);
+    }
+
+    public function maintenanceSchedules(): HasMany
+    {
+        return $this->hasMany(MaintenanceSchedule::class);
+    }
+
+    public function jobCards(): HasMany
+    {
+        return $this->hasMany(JobCard::class);
+    }
+
+    public function components(): HasMany
+    {
+        return $this->hasMany(VehicleComponent::class);
+    }
+
+    public function maintenanceAlerts(): HasMany
+    {
+        return $this->hasMany(MaintenanceAlert::class);
+    }
 }
 

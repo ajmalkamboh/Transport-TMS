@@ -138,6 +138,16 @@ class Trip extends Model
         return $this->hasMany(ProofOfDelivery::class);
     }
 
+    public function fuelEntries(): HasMany
+    {
+        return $this->hasMany(FuelEntry::class);
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(TripExpense::class);
+    }
+
     public function primaryVehicle(): ?Vehicle
     {
         return $this->resources()
