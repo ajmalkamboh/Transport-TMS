@@ -179,6 +179,42 @@ class Company extends Model
     }
 
     /**
+     * Check if company can register an additional fleet vehicle within plan limits.
+     */
+    public function canAddVehicle(): bool
+    {
+        if (!$this->plan || $this->plan->max_vehicles === -1) {
+            return true;
+        }
+
+        return $this->vehicles()->count() < $this->plan->max_vehicles;
+    }
+
+    /**
+     * Company fleet vehicles.
+     */
+    public function vehicles(): HasMany
+    {
+        return $this->hasMany(\App\Models\Vehicle::class);
+    }
+
+    /**
+     * Attached third-party vehicle owners.
+     */
+    public function vehicleOwners(): HasMany
+    {
+        return $this->hasMany(\App\Models\VehicleOwner::class);
+    }
+
+    /**
+     * Company employed / contracted drivers.
+     */
+    public function drivers(): HasMany
+    {
+        return $this->hasMany(\App\Models\Driver::class);
+    }
+
+    /**
      * Company financial years.
      */
     public function financialYears(): HasMany

@@ -60,6 +60,39 @@
                                 </a>
                             </li>
 
+                            @if(auth()->user()->isSuperAdmin() || auth()->user()->isTenantAdmin() || auth()->user()->hasPermission('view_fleet') || auth()->user()->hasPermission('manage_fleet'))
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Fleet & Drivers</div>
+                                    <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
+                                </div>
+                                <a class="nav-link {{ request()->routeIs('fleet.vehicles*') ? 'active' : '' }}" href="{{ route('fleet.vehicles') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-truck-moving"></span></span>
+                                        <span class="nav-link-text ps-1">Fleet Vehicles</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('fleet.owners*') ? 'active' : '' }}" href="{{ route('fleet.owners') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-user-tie"></span></span>
+                                        <span class="nav-link-text ps-1">Vehicle Owners</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('fleet.drivers*') ? 'active' : '' }}" href="{{ route('fleet.drivers') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-id-card"></span></span>
+                                        <span class="nav-link-text ps-1">Commercial Drivers</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('fleet.alerts*') ? 'active' : '' }}" href="{{ route('fleet.alerts') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-bell"></span></span>
+                                        <span class="nav-link-text ps-1">Document Expiries</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endif
+
                             @if(auth()->user()->isSuperAdmin())
                             <li class="nav-item">
                                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">

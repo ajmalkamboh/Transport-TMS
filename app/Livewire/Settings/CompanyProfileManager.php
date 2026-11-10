@@ -120,3 +120,4 @@ class CompanyProfileManager extends Component
         session()->flash('success', 'Company profile and system settings updated successfully.');
     }
 }
+

@@ -60,6 +60,23 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\MasterDataService::class, function () {
             return new \App\Services\MasterDataService();
         });
+
+        $this->app->singleton(\App\Services\FleetManagementService::class, function ($app) {
+            return new \App\Services\FleetManagementService(
+                $app->make(\App\Services\FeatureManagerService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\OwnerContractService::class, function () {
+            return new \App\Services\OwnerContractService();
+        });
+
+        $this->app->singleton(\App\Services\DriverOperationService::class, function ($app) {
+            return new \App\Services\DriverOperationService(
+                $app->make(\App\Services\DocumentSequenceService::class)
+            );
+        });
     }
 
     /**

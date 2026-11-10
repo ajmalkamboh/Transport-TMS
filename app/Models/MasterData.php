@@ -104,3 +104,4 @@ class MasterData extends Model
         })->orderBy('sort_order')->orderBy('name');
     }
 }
+

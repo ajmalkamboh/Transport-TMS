@@ -35,6 +35,14 @@ Route::middleware(['auth', 'user.active'])->group(function () {
         // Onboarding Setup Wizard
         Route::get('/onboarding', fn() => view('onboarding.index'))->name('onboarding');
 
+        // Fleet, Vehicle Owner and Driver Management
+        Route::prefix('fleet')->name('fleet.')->group(function () {
+            Route::get('/vehicles', fn() => view('fleet.vehicles.index'))->name('vehicles');
+            Route::get('/owners', fn() => view('fleet.owners.index'))->name('owners');
+            Route::get('/drivers', fn() => view('fleet.drivers.index'))->name('drivers');
+            Route::get('/alerts', fn() => view('fleet.alerts.index'))->name('alerts');
+        });
+
         // Organizational Configuration & Settings
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::get('/company', fn() => view('settings.company'))->name('company');

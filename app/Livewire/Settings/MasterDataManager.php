@@ -150,3 +150,4 @@ class MasterDataManager extends Component
         session()->flash('success', 'Custom lookup removed.');
     }
 }
+

@@ -156,3 +156,4 @@ class FinancialSettingsManager extends Component
         session()->flash('success', sprintf('Financial Year [%s] and all its periods have been CLOSED.', $fy->name));
     }
 }
+

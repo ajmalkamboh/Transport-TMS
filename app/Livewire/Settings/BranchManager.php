@@ -258,3 +258,4 @@ class BranchManager extends Component
         session()->flash('success', sprintf('Branch [%s] status changed to [%s].', $branch->name, $branch->is_active ? 'Active' : 'Inactive'));
     }
 }
+

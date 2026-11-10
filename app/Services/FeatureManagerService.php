@@ -66,6 +66,20 @@ class FeatureManagerService
     }
 
     /**
+     * Enforce vehicle fleet quota for tenant.
+     *
+     * @throws AuthorizationException
+     */
+    public function checkVehicleLimit(Company $company): void
+    {
+        if (!$company->canAddVehicle()) {
+            throw new AuthorizationException(
+                sprintf('Fleet quota exceeded. Your plan [%s] permits a maximum of %d registered vehicles.', $company->plan?->name, $company->plan?->max_vehicles)
+            );
+        }
+    }
+
+    /**
      * Configure a tenant-specific feature override.
      */
     public function setFeatureOverride(Company $company, string $featureSlug, bool $enabled): void

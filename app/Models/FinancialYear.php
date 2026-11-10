@@ -65,3 +65,4 @@ class FinancialYear extends Model
         return $carbonDate->betweenIncluded($this->start_date, $this->end_date);
     }
 }
+
