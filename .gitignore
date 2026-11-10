@@ -28,3 +28,4 @@ database/*.sqlite-journal
 public/hot
 public/storage
 tms_db
+

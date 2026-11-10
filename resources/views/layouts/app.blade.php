@@ -63,13 +63,31 @@
                             @if(auth()->user()->isSuperAdmin())
                             <li class="nav-item">
                                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                                    <div class="col-auto navbar-vertical-label text-warning">SaaS Platform</div>
+                                    <div class="col-auto navbar-vertical-label text-warning">SaaS Platform Governance</div>
                                     <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
                                 </div>
                                 <a class="nav-link {{ request()->routeIs('saas.dashboard') ? 'active' : '' }}" href="{{ route('saas.dashboard') }}">
                                     <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><span class="fas fa-network-wired"></span></span>
-                                        <span class="nav-link-text ps-1">Company Directory</span>
+                                        <span class="nav-link-icon"><span class="fas fa-crown"></span></span>
+                                        <span class="nav-link-text ps-1">Platform Dashboard</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('saas.tenants') ? 'active' : '' }}" href="{{ route('saas.tenants') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-building"></span></span>
+                                        <span class="nav-link-text ps-1">Transport Companies</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('saas.plans') ? 'active' : '' }}" href="{{ route('saas.plans') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-layer-group"></span></span>
+                                        <span class="nav-link-text ps-1">Subscription Plans</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('saas.billing') ? 'active' : '' }}" href="{{ route('saas.billing') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
+                                        <span class="nav-link-text ps-1">SaaS Billing & Receipts</span>
                                     </div>
                                 </a>
                             </li>

@@ -36,6 +36,9 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     // Platform Super Admin SaaS Governance Routes
     Route::middleware('super_admin')->prefix('saas')->name('saas.')->group(function () {
         Route::get('/dashboard', [SaasController::class, 'index'])->name('dashboard');
+        Route::get('/tenants', [SaasController::class, 'tenants'])->name('tenants');
+        Route::get('/plans', [SaasController::class, 'plans'])->name('plans');
+        Route::get('/billing', [SaasController::class, 'billing'])->name('billing');
     });
 });
 

@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
@@ -21,16 +23,38 @@ class Company extends Model
         'phone',
         'address',
         'tax_number',
-        'status', // active, inactive, suspended
+        'status', // active, inactive, suspended, trial
+        'plan_id',
+        'owner_id',
         'subscription_plan',
         'subscription_expires_at',
+        'trial_ends_at',
         'settings',
+        'feature_overrides',
     ];
 
     protected $casts = [
         'settings' => 'array',
+        'feature_overrides' => 'array',
         'subscription_expires_at' => 'datetime',
+        'trial_ends_at' => 'datetime',
     ];
+
+    /**
+     * Assigned subscription plan.
+     */
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
+    }
+
+    /**
+     * Assigned tenant business owner.
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 
     /**
      * Company branches.
@@ -57,11 +81,82 @@ class Company extends Model
     }
 
     /**
+     * Subscriptions history for this tenant.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Current active subscription.
+     */
+    public function activeSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)
+            ->whereIn('status', ['active', 'trial'])
+            ->latestOfMany();
+    }
+
+    /**
+     * Platform subscription invoices.
+     */
+    public function subscriptionInvoices(): HasMany
+    {
+        return $this->hasMany(SubscriptionInvoice::class);
+    }
+
+    /**
+     * Platform subscription payments.
+     */
+    public function subscriptionPayments(): HasMany
+    {
+        return $this->hasMany(SubscriptionPayment::class);
+    }
+
+    /**
      * Document sequences maintained for this company.
      */
     public function documentSequences(): HasMany
     {
         return $this->hasMany(DocumentSequence::class);
     }
-}
 
+    /**
+     * Check if company has access to a specific feature (plan + overrides).
+     */
+    public function hasFeature(string $featureSlug): bool
+    {
+        // 1. Check tenant-specific feature overrides first
+        if ($this->feature_overrides && array_key_exists($featureSlug, $this->feature_overrides)) {
+            return (bool) $this->feature_overrides[$featureSlug];
+        }
+
+        // 2. Check active subscription plan features
+        return $this->plan?->hasFeature($featureSlug) ?? false;
+    }
+
+    /**
+     * Check if company can register an additional user within plan limits.
+     */
+    public function canAddUser(): bool
+    {
+        if (!$this->plan || $this->plan->max_users === -1) {
+            return true;
+        }
+
+        return $this->users()->count() < $this->plan->max_users;
+    }
+
+    /**
+     * Check if company can create an additional branch within plan limits.
+     */
+    public function canAddBranch(): bool
+    {
+        if (!$this->plan || $this->plan->max_branches === -1) {
+            return true;
+        }
+
+        return $this->branches()->count() < $this->plan->max_branches;
+    }
+}

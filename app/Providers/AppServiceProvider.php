@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Services\AuditLogService;
 use App\Services\BranchAccessService;
 use App\Services\DocumentSequenceService;
+use App\Services\FeatureManagerService;
 use App\Services\FileStorageService;
+use App\Services\SubscriptionService;
 use App\Services\TenantAuthorizationService;
 use App\Services\TenantContextService;
 use Illuminate\Support\Facades\Gate;
@@ -41,6 +43,14 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(FileStorageService::class, function ($app) {
             return new FileStorageService($app->make(TenantContextService::class));
+        });
+
+        $this->app->singleton(FeatureManagerService::class, function () {
+            return new FeatureManagerService();
+        });
+
+        $this->app->singleton(SubscriptionService::class, function () {
+            return new SubscriptionService();
         });
     }
 

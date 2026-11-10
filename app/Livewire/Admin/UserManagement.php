@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Branch;
+use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\AuditLogService;
@@ -165,6 +166,12 @@ class UserManagement extends Component
             app(AuditLogService::class)->log('user_updated', $user, $oldValues, $updateData, 'User account updated.');
             session()->flash('success', 'User updated successfully.');
         } else {
+            // Enforce Subscription Plan User Limit
+            $company = Company::find($companyId);
+            if ($company) {
+                app(\App\Services\FeatureManagerService::class)->checkUserLimit($company);
+            }
+
             $userData = [
                 'company_id' => $companyId,
                 'branch_id' => $validated['branch_id'],

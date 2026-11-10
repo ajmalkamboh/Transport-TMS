@@ -20,6 +20,19 @@ class TenantContextService
     }
 
     /**
+     * Set full tenant context (company and branch).
+     */
+    public function setTenantContext(?Company $company, mixed $branch = null): void
+    {
+        $this->setCompany($company);
+        if ($branch instanceof \App\Models\Branch) {
+            $this->setBranchId($branch->id);
+        } elseif (is_int($branch) || is_null($branch)) {
+            $this->setBranchId($branch);
+        }
+    }
+
+    /**
      * Get the active tenant company.
      */
     public function getCompany(): ?Company

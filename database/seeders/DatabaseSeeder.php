@@ -142,7 +142,78 @@ class DatabaseSeeder extends Seeder
             ->toArray();
         $dispatcherRole->permissions()->sync($dispatcherPerms);
 
-        // 3. Create Platform Super Admin (company_id is null)
+        // 3. Create Default Subscription Plans
+        $starterPlan = \App\Models\SubscriptionPlan::firstOrCreate(
+            ['slug' => 'starter'],
+            [
+                'name' => 'Starter Tier',
+                'description' => 'Ideal for small local transport operations with up to 5 trucks.',
+                'monthly_price' => 15000.00,
+                'quarterly_price' => 42000.00,
+                'annual_price' => 150000.00,
+                'trial_duration_days' => 14,
+                'max_vehicles' => 5,
+                'max_users' => 3,
+                'max_branches' => 1,
+                'max_storage_mb' => 2048,
+                'features' => [
+                    'fleet_management',
+                    'driver_management',
+                    'customer_management',
+                    'booking_management',
+                    'trip_management',
+                ],
+                'is_active' => true,
+            ]
+        );
+
+        $professionalPlan = \App\Models\SubscriptionPlan::firstOrCreate(
+            ['slug' => 'professional'],
+            [
+                'name' => 'Professional Logistics Tier',
+                'description' => 'Comprehensive freight and fleet control with fuel and double-entry accounting.',
+                'monthly_price' => 35000.00,
+                'quarterly_price' => 99000.00,
+                'annual_price' => 350000.00,
+                'trial_duration_days' => 14,
+                'max_vehicles' => 25,
+                'max_users' => 10,
+                'max_branches' => 5,
+                'max_storage_mb' => 10240,
+                'features' => [
+                    'fleet_management',
+                    'driver_management',
+                    'customer_management',
+                    'booking_management',
+                    'trip_management',
+                    'fuel_management',
+                    'maintenance',
+                    'accounting',
+                    'advanced_reporting',
+                ],
+                'is_active' => true,
+            ]
+        );
+
+        $enterprisePlan = \App\Models\SubscriptionPlan::firstOrCreate(
+            ['slug' => 'enterprise'],
+            [
+                'name' => 'Enterprise Multi-Branch Tier',
+                'description' => 'Unlimited fleet scale, real-time GPS tracking, customer tracking portal, and mobile app.',
+                'monthly_price' => 75000.00,
+                'quarterly_price' => 210000.00,
+                'annual_price' => 750000.00,
+                'trial_duration_days' => 14,
+                'max_vehicles' => -1, // Unlimited
+                'max_users' => -1,
+                'max_branches' => -1,
+                'max_storage_mb' => -1,
+                'features' => array_keys(\App\Models\SubscriptionPlan::ALL_FEATURES),
+                'is_active' => true,
+            ]
+        );
+
+        // 4. Create Platform Super Admin (company_id is null)
         User::firstOrCreate(
             ['email' => 'admin@tms.local'],
             [
@@ -250,6 +321,58 @@ class DatabaseSeeder extends Seeder
         // Authorize dispatcher for both Lahore and Karachi branches
         $dispatcherA->branches()->syncWithoutDetaching([$branchLahore->id, $branchKarachi->id]);
 
+        // Link Owner & Plan to Company A
+        $companyA->owner_id = $ownerA->id;
+        $companyA->plan_id = $enterprisePlan->id;
+        $companyA->save();
+
+        // Create Active Subscription for Company A
+        $subA = \App\Models\Subscription::firstOrCreate(
+            ['company_id' => $companyA->id, 'plan_id' => $enterprisePlan->id],
+            [
+                'billing_cycle' => 'annual',
+                'status' => 'active',
+                'starts_at' => now()->subMonth(),
+                'ends_at' => now()->addMonths(11),
+                'grace_period_ends_at' => now()->addMonths(11)->addDays(7),
+                'price' => $enterprisePlan->annual_price,
+                'currency' => 'PKR',
+                'auto_renew' => true,
+            ]
+        );
+
+        // Seed paid invoice and payment for Company A
+        $invA = \App\Models\SubscriptionInvoice::firstOrCreate(
+            ['company_id' => $companyA->id, 'invoice_number' => 'SAAS-INV-2026-0001'],
+            [
+                'subscription_id' => $subA->id,
+                'invoice_date' => now()->subMonth()->toDateString(),
+                'due_date' => now()->subDays(15)->toDateString(),
+                'billing_cycle' => 'annual',
+                'subtotal' => $enterprisePlan->annual_price,
+                'tax_amount' => round($enterprisePlan->annual_price * 0.05, 2),
+                'total_amount' => round($enterprisePlan->annual_price * 1.05, 2),
+                'paid_amount' => round($enterprisePlan->annual_price * 1.05, 2),
+                'balance_amount' => 0.00,
+                'status' => 'paid',
+                'notes' => 'Annual enterprise license fee paid via direct wire transfer.',
+            ]
+        );
+
+        \App\Models\SubscriptionPayment::firstOrCreate(
+            ['company_id' => $companyA->id, 'payment_number' => 'SAAS-PAY-2026-0001'],
+            [
+                'invoice_id' => $invA->id,
+                'payment_date' => now()->subDays(20)->toDateString(),
+                'amount' => $invA->total_amount,
+                'payment_method' => 'bank_transfer',
+                'payment_reference' => 'HBL-FT-94028471',
+                'status' => 'verified',
+                'verified_by' => 1,
+                'verified_at' => now()->subDays(20),
+            ]
+        );
+
         // Document Sequences for Company A
         DocumentSequence::firstOrCreate(
             ['company_id' => $companyA->id, 'document_type' => 'consignment', 'year' => date('Y')],
@@ -295,7 +418,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
+        $ownerB = User::firstOrCreate(
             ['email' => 'owner@indusfreight.com'],
             [
                 'company_id' => $companyB->id,
@@ -306,6 +429,25 @@ class DatabaseSeeder extends Seeder
                 'phone' => '+92-301-5556677',
                 'status' => 'active',
                 'is_super_admin' => false,
+            ]
+        );
+
+        $companyB->owner_id = $ownerB->id;
+        $companyB->plan_id = $professionalPlan->id;
+        $companyB->save();
+
+        // Create Trial Subscription for Company B
+        \App\Models\Subscription::firstOrCreate(
+            ['company_id' => $companyB->id, 'plan_id' => $professionalPlan->id],
+            [
+                'billing_cycle' => 'monthly',
+                'status' => 'trial',
+                'starts_at' => now(),
+                'ends_at' => now()->addDays(14),
+                'grace_period_ends_at' => now()->addDays(17),
+                'price' => $professionalPlan->monthly_price,
+                'currency' => 'PKR',
+                'auto_renew' => false,
             ]
         );
 
