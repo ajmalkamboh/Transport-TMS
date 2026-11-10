@@ -53,4 +53,35 @@ class PrintDocumentController extends Controller
 
         return view('print.booking-summary', compact('booking'));
     }
+
+    public function loadingSlip(int $id)
+    {
+        $trip = \App\Models\Trip::withoutGlobalScopes()
+            ->with(['company', 'branch', 'dispatcher', 'tripConsignments.consignment.customer', 'resources.vehicle', 'resources.driver'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($trip);
+
+        return view('print.loading-slip', compact('trip'));
+    }
+
+    public function tripSheet(int $id)
+    {
+        $trip = \App\Models\Trip::withoutGlobalScopes()
+            ->with(['company', 'branch', 'dispatcher', 'dispatchedByUser', 'tripConsignments.consignment.customer', 'resources.vehicle', 'resources.driver', 'checkpoints'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($trip);
+
+        return view('print.trip-sheet', compact('trip'));
+    }
+
+    public function podReceipt(int $id)
+    {
+        $pod = \App\Models\ProofOfDelivery::withoutGlobalScopes()
+            ->with(['company', 'trip', 'consignment.customer', 'tripConsignment', 'verifier'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($pod);
+
+        return view('print.pod-receipt', compact('pod'));
+    }
 }
+

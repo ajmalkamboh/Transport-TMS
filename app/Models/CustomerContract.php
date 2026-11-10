@@ -121,3 +121,4 @@ class CustomerContract extends Model
         return (float) $this->base_rate;
     }
 }
+

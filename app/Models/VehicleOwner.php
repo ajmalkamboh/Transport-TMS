@@ -82,3 +82,4 @@ class VehicleOwner extends Model
         return $this->status === 'blacklisted';
     }
 }
+

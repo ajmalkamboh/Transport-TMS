@@ -115,6 +115,29 @@ class Vehicle extends Model
         return $this->hasMany(VehicleDriverAssignment::class, 'vehicle_id')->where('status', 'active');
     }
 
+    public function getCurrentOdometerAttribute(): int
+    {
+        return (int) ($this->attributes['current_odometer_km'] ?? 0);
+    }
+
+    public function setCurrentOdometerAttribute($value): void
+    {
+        $this->attributes['current_odometer_km'] = (int) $value;
+    }
+
+    public function getMakeModelAttribute(): string
+    {
+        $make = $this->attributes['make'] ?? '';
+        $model = $this->attributes['model'] ?? '';
+        $combined = trim("{$make} {$model}");
+        return $combined ?: ($this->attributes['vehicle_type'] ?? 'Truck');
+    }
+
+    public function getCapacityTonsAttribute(): float
+    {
+        return (float) ($this->attributes['payload_capacity_tons'] ?? 0.0);
+    }
+
     /**
      * Vehicle documentation & compliance files.
      */
@@ -138,3 +161,4 @@ class Vehicle extends Model
         return $this->status === self::STATUS_AVAILABLE;
     }
 }
+

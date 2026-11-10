@@ -47,3 +47,4 @@ class DriverAdvance extends Model
         return $this->belongsTo(User::class, 'disbursed_by');
     }
 }
+

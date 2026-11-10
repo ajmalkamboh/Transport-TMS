@@ -277,3 +277,4 @@ class QuotationManager extends Component
         $this->showDetailModal = true;
     }
 }
+

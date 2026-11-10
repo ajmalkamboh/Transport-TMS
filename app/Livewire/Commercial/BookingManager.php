@@ -304,3 +304,4 @@ class BookingManager extends Component
         $this->showDetailModal = true;
     }
 }
+

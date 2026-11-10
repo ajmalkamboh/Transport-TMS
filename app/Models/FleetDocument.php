@@ -86,3 +86,4 @@ class FleetDocument extends Model
             ->whereDate('expiry_date', '<', now());
     }
 }
+

@@ -275,3 +275,4 @@ class VehicleOwnerManager extends Component
         $this->showDetailModal = true;
     }
 }
+

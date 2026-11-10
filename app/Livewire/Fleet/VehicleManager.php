@@ -313,3 +313,4 @@ class VehicleManager extends Component
         session()->flash('success', sprintf('Drivers unassigned from truck [%s].', $vehicle->registration_number));
     }
 }
+

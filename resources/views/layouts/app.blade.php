@@ -124,6 +124,25 @@
                                     </div>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Trip & Delivery Operations</div>
+                                    <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
+                                </div>
+                                <a class="nav-link {{ request()->routeIs('operations.trips*') ? 'active' : '' }}" href="{{ route('operations.trips') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-route"></span></span>
+                                        <span class="nav-link-text ps-1">Trips & Dispatch</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('operations.deliveries*') ? 'active' : '' }}" href="{{ route('operations.deliveries') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-clipboard-check"></span></span>
+                                        <span class="nav-link-text ps-1">Deliveries & POD</span>
+                                    </div>
+                                </a>
+                            </li>
                             @endif
 
                             @if(auth()->user()->isSuperAdmin())

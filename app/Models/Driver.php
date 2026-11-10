@@ -18,6 +18,7 @@ class Driver extends Model
 
     public const STATUS_AVAILABLE = 'available';
     public const STATUS_ON_TRIP = 'on_trip';
+    public const STATUS_ON_DUTY = 'on_trip';
     public const STATUS_ON_LEAVE = 'on_leave';
     public const STATUS_SUSPENDED = 'suspended';
     public const STATUS_TERMINATED = 'terminated';
@@ -92,6 +93,16 @@ class Driver extends Model
         return $this->hasMany(DriverAdvance::class, 'driver_id')->orderByDesc('date');
     }
 
+    public function getCnicAttribute(): ?string
+    {
+        return $this->attributes['cnic_number'] ?? null;
+    }
+
+    public function setCnicAttribute($value): void
+    {
+        $this->attributes['cnic_number'] = $value;
+    }
+
     /**
      * Driver documents (CNIC copy, Driving License, Police Verification).
      */
@@ -110,3 +121,4 @@ class Driver extends Model
         return $this->license_expiry_date->isPast();
     }
 }
+

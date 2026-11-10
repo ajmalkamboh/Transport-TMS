@@ -51,3 +51,4 @@ class VehicleDriverAssignment extends Model
         return $this->status === 'active';
     }
 }
+

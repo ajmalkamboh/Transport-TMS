@@ -36,3 +36,4 @@ class FleetAlertsManager extends Component
         ]);
     }
 }
+

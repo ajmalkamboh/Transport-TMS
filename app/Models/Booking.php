@@ -149,3 +149,4 @@ class Booking extends Model
         $this->save();
     }
 }
+

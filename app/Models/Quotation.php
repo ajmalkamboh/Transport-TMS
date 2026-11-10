@@ -123,3 +123,4 @@ class Quotation extends Model
         return ($this->status === self::STATUS_APPROVED || $this->status === self::STATUS_SENT) && !$this->converted_booking_id;
     }
 }
+

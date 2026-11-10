@@ -144,3 +144,4 @@ class Customer extends Model
         return ((float) $this->current_balance + $additionalAmount) <= (float) $this->credit_limit;
     }
 }
+

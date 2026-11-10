@@ -255,6 +255,22 @@ class Company extends Model
     }
 
     /**
+     * Transport trips.
+     */
+    public function trips(): HasMany
+    {
+        return $this->hasMany(\App\Models\Trip::class);
+    }
+
+    /**
+     * Proof of deliveries.
+     */
+    public function proofOfDeliveries(): HasMany
+    {
+        return $this->hasMany(\App\Models\ProofOfDelivery::class);
+    }
+
+    /**
      * Company financial years.
      */
     public function financialYears(): HasMany

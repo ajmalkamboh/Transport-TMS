@@ -368,3 +368,4 @@ class CustomerManager extends Component
         $this->showDetailModal = true;
     }
 }
+

@@ -110,6 +110,18 @@ class Consignment extends Model
         return $this->hasMany(ConsignmentItem::class);
     }
 
+    public function tripConsignments(): HasMany
+    {
+        return $this->hasMany(TripConsignment::class);
+    }
+
+    public function trips(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Trip::class, 'trip_consignments')
+            ->withPivot(['id', 'assigned_quantity', 'loading_status', 'delivered_quantity', 'delivery_status'])
+            ->withTimestamps();
+    }
+
     /**
      * Check if a given dispatch quantity is permitted.
      * Rule: Dispatch quantity must not exceed remaining undelivered quantity.
@@ -168,3 +180,4 @@ class Consignment extends Model
         $this->save();
     }
 }
+

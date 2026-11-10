@@ -51,6 +51,12 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/consignments', fn() => view('commercial.consignments.index'))->name('consignments');
         });
 
+        // Operations Management (Trips, Dispatch, Route Checkpoints, Deliveries & POD)
+        Route::prefix('operations')->name('operations.')->group(function () {
+            Route::get('/trips', fn() => view('operations.trips.index'))->name('trips');
+            Route::get('/deliveries', fn() => view('operations.deliveries.index'))->name('deliveries');
+        });
+
         // Professional Document Printing Gateway
         Route::prefix('print')->name('print.')->group(function () {
             Route::get('/quotation/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'quotation'])->name('quotation');
@@ -58,6 +64,9 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/consignment/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'consignment'])->name('consignment');
             Route::get('/cargo-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'cargoReceipt'])->name('cargo-receipt');
             Route::get('/booking-summary/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'bookingSummary'])->name('booking-summary');
+            Route::get('/loading-slip/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'loadingSlip'])->name('loading-slip');
+            Route::get('/trip-sheet/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'tripSheet'])->name('trip-sheet');
+            Route::get('/pod-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'podReceipt'])->name('pod-receipt');
         });
 
         // Organizational Configuration & Settings

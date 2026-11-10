@@ -793,3 +793,4 @@ class CustomerCommercialManagementTest extends TestCase
         $this->get(route('print.consignment', $consignment->id))->assertForbidden();
     }
 }
+

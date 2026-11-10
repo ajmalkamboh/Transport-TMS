@@ -92,3 +92,4 @@
     <div>Page 1 of 1 (Consignment Bilty Note)</div>
 </div>
 @endsection
+
