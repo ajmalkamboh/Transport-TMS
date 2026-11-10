@@ -52,6 +52,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(SubscriptionService::class, function () {
             return new SubscriptionService();
         });
+
+        $this->app->singleton(\App\Services\FinancialPeriodService::class, function () {
+            return new \App\Services\FinancialPeriodService();
+        });
+
+        $this->app->singleton(\App\Services\MasterDataService::class, function () {
+            return new \App\Services\MasterDataService();
+        });
     }
 
     /**

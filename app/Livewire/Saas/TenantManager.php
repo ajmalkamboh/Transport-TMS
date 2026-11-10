@@ -336,3 +336,4 @@ class TenantManager extends Component
         $this->viewingCompany = null;
     }
 }
+

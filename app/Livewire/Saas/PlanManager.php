@@ -156,3 +156,4 @@ class PlanManager extends Component
         session()->flash('success', sprintf('Plan [%s] is now %s.', $plan->name, $plan->is_active ? 'Active' : 'Deactivated'));
     }
 }
+

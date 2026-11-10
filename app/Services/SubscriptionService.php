@@ -324,3 +324,4 @@ class SubscriptionService
         return SubscriptionPayment::where('status', 'pending_verification')->count();
     }
 }
+

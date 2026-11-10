@@ -79,3 +79,4 @@ class Subscription extends Model
         return $this->status === 'suspended';
     }
 }
+

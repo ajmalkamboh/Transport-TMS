@@ -105,6 +105,38 @@
                                         <span class="nav-link-text ps-1">User & Role Management</span>
                                     </div>
                                 </a>
+                                @if(auth()->user()->company_id)
+                                <a class="nav-link {{ request()->routeIs('settings.company') ? 'active' : '' }}" href="{{ route('settings.company') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-building"></span></span>
+                                        <span class="nav-link-text ps-1">Company Profile</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('settings.branches') ? 'active' : '' }}" href="{{ route('settings.branches') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-code-branch"></span></span>
+                                        <span class="nav-link-text ps-1">Branch Management</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('settings.financial') ? 'active' : '' }}" href="{{ route('settings.financial') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-calendar-alt"></span></span>
+                                        <span class="nav-link-text ps-1">Fiscal Periods</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('settings.master-data') ? 'active' : '' }}" href="{{ route('settings.master-data') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-database"></span></span>
+                                        <span class="nav-link-text ps-1">Master Data Lookups</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('onboarding') ? 'active' : '' }}" href="{{ route('onboarding') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-magic"></span></span>
+                                        <span class="nav-link-text ps-1">Setup Wizard</span>
+                                    </div>
+                                </a>
+                                @endif
                             </li>
                             @endif
                         </ul>

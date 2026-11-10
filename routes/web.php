@@ -31,6 +31,17 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
         // Company Administration (Users & RBAC)
         Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users');
+
+        // Onboarding Setup Wizard
+        Route::get('/onboarding', fn() => view('onboarding.index'))->name('onboarding');
+
+        // Organizational Configuration & Settings
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/company', fn() => view('settings.company'))->name('company');
+            Route::get('/branches', fn() => view('settings.branches'))->name('branches');
+            Route::get('/financial', fn() => view('settings.financial'))->name('financial');
+            Route::get('/master-data', fn() => view('settings.master-data'))->name('master-data');
+        });
     });
 
     // Platform Super Admin SaaS Governance Routes

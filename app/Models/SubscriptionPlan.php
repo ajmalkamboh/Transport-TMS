@@ -98,3 +98,4 @@ class SubscriptionPlan extends Model
         };
     }
 }
+

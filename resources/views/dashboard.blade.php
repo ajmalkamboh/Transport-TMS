@@ -29,6 +29,33 @@
     </div>
 </div>
 
+@if($company && !$company->isOnboarded())
+<div class="row g-3 mb-3">
+    <div class="col-12">
+        <div class="card bg-soft-warning border-warning shadow-sm">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <div class="avatar avatar-l bg-warning rounded-circle me-3">
+                            <span class="fas fa-magic text-white"></span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Initial Setup Incomplete ({{ $company->getOnboardingProgressPercentage() }}% Done)</h6>
+                            <div class="fs--1 text-700">Complete the 6-step guided wizard to configure your legal identity, branches, fiscal year, and transport masters.</div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ route('onboarding') }}" class="btn btn-warning btn-sm text-dark fw-bold shadow-sm">
+                            <i class="fas fa-arrow-right me-1"></i> Continue Setup Wizard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="row g-3 mb-3">
     <!-- Active Branches Card -->
     <div class="col-sm-6 col-md-4">

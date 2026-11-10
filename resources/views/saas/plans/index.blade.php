@@ -20,3 +20,4 @@
 
 <livewire:saas.plan-manager />
 @endsection
+

@@ -27,6 +27,7 @@ class BillingManager extends Component
     public string $paymentMethod = 'bank_transfer';
     public string $paymentReference = '';
     public string $paymentNotes = '';
+    public bool $autoVerify = false;
 
     protected function checkSuperAdmin(): void
     {
@@ -99,7 +100,7 @@ class BillingManager extends Component
             $this->paymentMethod,
             $this->paymentReference,
             $this->paymentNotes,
-            false // requires manual payment verification workflow
+            $this->autoVerify
         );
 
         session()->flash('success', sprintf('Payment of PKR %s recorded and applied to invoice [%s].', number_format($this->paymentAmount, 2), $invoice->invoice_number));
@@ -138,3 +139,4 @@ class BillingManager extends Component
         session()->flash('error', sprintf('Payment [%s] marked as rejected.', $payment->payment_number));
     }
 }
+

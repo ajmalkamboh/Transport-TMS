@@ -20,3 +20,4 @@
 
 <livewire:saas.tenant-manager />
 @endsection
+

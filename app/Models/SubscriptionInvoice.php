@@ -55,3 +55,4 @@ class SubscriptionInvoice extends Model
         return $this->hasMany(SubscriptionPayment::class, 'invoice_id');
     }
 }
+

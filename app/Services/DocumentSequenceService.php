@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Branch;
 use App\Models\DocumentSequence;
 use Illuminate\Support\Facades\DB;
 
@@ -12,46 +13,61 @@ class DocumentSequenceService
     ) {}
 
     /**
-     * Generate the next atomic sequence number for a document type.
-     * Guaranteed safe against concurrent race conditions via pessimistic row locking.
+     * Generate the next atomic sequence number for any of the 11 document types.
+     * Guaranteed safe against concurrent race conditions via pessimistic row locking (SELECT ... FOR UPDATE).
      *
-     * @param string $documentType e.g., 'consignment', 'trip', 'invoice', 'voucher'
-     * @param string|null $prefix e.g., 'LR', 'TRIP', 'INV'
-     * @param int $padding e.g., 5 produces '00001'
-     * @param int|null $explicitCompanyId
-     * @return string
+     * @param string $documentType e.g., 'consignment', 'trip', 'invoice', 'quotation', 'booking'
+     * @param string|null $prefix Override prefix (e.g. 'FEC-LR')
+     * @param int $padding Number of digits (default 5, e.g. '00001')
+     * @param int|null $explicitCompanyId Tenant company ID override
+     * @param int|null $explicitBranchId Branch ID for branch-specific numbering
+     * @return string Formatted unique document number
      */
     public function getNextSequenceNumber(
         string $documentType,
         ?string $prefix = null,
         int $padding = 5,
-        ?int $explicitCompanyId = null
+        ?int $explicitCompanyId = null,
+        ?int $explicitBranchId = null
     ): string {
         $companyId = $explicitCompanyId ?? $this->tenantContext->getCompanyId();
 
         if ($companyId === null) {
-            throw new \RuntimeException('Cannot generate sequence number without tenant company context.');
+            throw new \RuntimeException('Cannot generate document sequence number without tenant company context.');
         }
 
-        $year = date('Y');
-        $resolvedPrefix = $prefix ?? strtoupper(substr($documentType, 0, 3));
+        $branchId = $explicitBranchId;
+        $year = (int) date('Y');
 
-        return DB::transaction(function () use ($companyId, $documentType, $year, $resolvedPrefix, $padding) {
-            /** @var DocumentSequence $sequence */
-            $sequence = DocumentSequence::withoutGlobalScopes()
+        // Resolve default prefix from DocumentSequence::ALL_TYPES if available
+        $defaultConfig = DocumentSequence::ALL_TYPES[$documentType] ?? null;
+        $resolvedPrefix = $prefix ?? ($defaultConfig ? $defaultConfig['default_prefix'] : strtoupper(substr($documentType, 0, 3)));
+
+        return DB::transaction(function () use ($companyId, $branchId, $documentType, $year, $resolvedPrefix, $padding) {
+            $query = DocumentSequence::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('document_type', $documentType)
-                ->where('year', $year)
-                ->lockForUpdate()
-                ->first();
+                ->where('year', $year);
+
+            if ($branchId !== null) {
+                $query->where('branch_id', $branchId);
+            } else {
+                $query->whereNull('branch_id');
+            }
+
+            /** @var DocumentSequence|null $sequence */
+            $sequence = $query->lockForUpdate()->first();
 
             if (!$sequence) {
                 $sequence = DocumentSequence::create([
                     'company_id' => $companyId,
+                    'branch_id' => $branchId,
                     'document_type' => $documentType,
                     'year' => $year,
                     'prefix' => $resolvedPrefix,
+                    'padding' => $padding,
                     'last_number' => 1,
+                    'reset_frequency' => 'yearly',
                 ]);
 
                 $nextNumber = 1;
@@ -61,8 +77,46 @@ class DocumentSequenceService
                 $nextNumber = $sequence->last_number;
             }
 
-            return sprintf('%s-%s-%s', $sequence->prefix, $year, str_pad((string) $nextNumber, $padding, '0', STR_PAD_LEFT));
+            $padLength = $sequence->padding ?: $padding;
+            $formattedNum = str_pad((string) $nextNumber, $padLength, '0', STR_PAD_LEFT);
+
+            // If sequence is branch-specific, append branch code if present
+            if ($branchId !== null) {
+                $branch = Branch::withoutGlobalScopes()->find($branchId);
+                if ($branch) {
+                    return sprintf('%s-%s-%s-%s', $sequence->prefix, $branch->code, $year, $formattedNum);
+                }
+            }
+
+            return sprintf('%s-%s-%s', $sequence->prefix, $year, $formattedNum);
         });
     }
-}
 
+    /**
+     * Configure or initialize a custom sequence prefix and padding for a tenant/branch.
+     */
+    public function configureSequence(
+        int $companyId,
+        string $documentType,
+        string $prefix,
+        int $padding = 5,
+        ?int $branchId = null,
+        ?int $initialNumber = 0
+    ): DocumentSequence {
+        $year = (int) date('Y');
+
+        return DocumentSequence::withoutGlobalScopes()->updateOrCreate(
+            [
+                'company_id' => $companyId,
+                'branch_id' => $branchId,
+                'document_type' => $documentType,
+                'year' => $year,
+            ],
+            [
+                'prefix' => strtoupper($prefix),
+                'padding' => $padding,
+                'last_number' => $initialNumber,
+            ]
+        );
+    }
+}

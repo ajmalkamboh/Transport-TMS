@@ -43,3 +43,4 @@ class EnsureFeatureEnabled
         return $next($request);
     }
 }
+

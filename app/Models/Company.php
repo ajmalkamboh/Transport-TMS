@@ -17,12 +17,23 @@ class Company extends Model
 
     protected $fillable = [
         'name',
+        'trading_name',
         'code',
         'slug',
         'email',
         'phone',
+        'website',
         'address',
+        'country',
+        'currency',
+        'timezone',
+        'currency_precision',
         'tax_number',
+        'registration_number',
+        'logo_path',
+        'is_tax_enabled',
+        'tax_name',
+        'default_tax_rate',
         'status', // active, inactive, suspended, trial
         'plan_id',
         'owner_id',
@@ -31,13 +42,20 @@ class Company extends Model
         'trial_ends_at',
         'settings',
         'feature_overrides',
+        'onboarding_completed_at',
+        'onboarding_step',
     ];
 
     protected $casts = [
         'settings' => 'array',
         'feature_overrides' => 'array',
+        'is_tax_enabled' => 'boolean',
+        'currency_precision' => 'integer',
+        'default_tax_rate' => 'decimal:2',
         'subscription_expires_at' => 'datetime',
         'trial_ends_at' => 'datetime',
+        'onboarding_completed_at' => 'datetime',
+        'onboarding_step' => 'integer',
     ];
 
     /**
@@ -158,5 +176,49 @@ class Company extends Model
         }
 
         return $this->branches()->count() < $this->plan->max_branches;
+    }
+
+    /**
+     * Company financial years.
+     */
+    public function financialYears(): HasMany
+    {
+        return $this->hasMany(FinancialYear::class)->orderByDesc('start_date');
+    }
+
+    /**
+     * Active current financial year.
+     */
+    public function currentFinancialYear(): HasOne
+    {
+        return $this->hasOne(FinancialYear::class)->where('is_current', true);
+    }
+
+    /**
+     * Custom master data items defined by this company.
+     */
+    public function masterData(): HasMany
+    {
+        return $this->hasMany(MasterData::class);
+    }
+
+    /**
+     * Check if tenant has completed initial onboarding setup wizard.
+     */
+    public function isOnboarded(): bool
+    {
+        return !is_null($this->onboarding_completed_at);
+    }
+
+    /**
+     * Calculate onboarding wizard completion percentage (1 to 6 steps).
+     */
+    public function getOnboardingProgressPercentage(): int
+    {
+        if ($this->isOnboarded()) {
+            return 100;
+        }
+
+        return min(100, (int) round((($this->onboarding_step - 1) / 6) * 100));
     }
 }

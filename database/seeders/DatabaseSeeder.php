@@ -373,15 +373,38 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Mark Company A as onboarded
+        $companyA->trading_name = 'Falcon Express Cargo';
+        $companyA->registration_number = 'SECP-0094821';
+        $companyA->website = 'https://falconexpress.com';
+        $companyA->onboarding_completed_at = now();
+        $companyA->onboarding_step = 6;
+        $companyA->save();
+
+        // Seed System Default Lookups (12 Categories)
+        app(\App\Services\MasterDataService::class)->seedSystemDefaultLookups();
+
+        // Seed Financial Year & Periods for Company A
+        app(\App\Services\FinancialPeriodService::class)->createFinancialYearWithPeriods(
+            $companyA,
+            'FY 2026-2027',
+            date('Y') . '-07-01',
+            (date('Y') + 1) . '-06-30',
+            true
+        );
+
         // Document Sequences for Company A
-        DocumentSequence::firstOrCreate(
-            ['company_id' => $companyA->id, 'document_type' => 'consignment', 'year' => date('Y')],
-            ['prefix' => 'FEC-LR', 'last_number' => 100]
-        );
-        DocumentSequence::firstOrCreate(
-            ['company_id' => $companyA->id, 'document_type' => 'trip', 'year' => date('Y')],
-            ['prefix' => 'FEC-TR', 'last_number' => 50]
-        );
+        $docSeqService = app(\App\Services\DocumentSequenceService::class);
+        foreach (\App\Models\DocumentSequence::ALL_TYPES as $type => $info) {
+            $docSeqService->configureSequence(
+                $companyA->id,
+                $type,
+                'FEC-' . $info['default_prefix'],
+                5,
+                null,
+                $type === 'consignment' ? 100 : ($type === 'trip' ? 50 : 0)
+            );
+        }
 
         // 5. Create Demo Tenant Company B (to test isolation)
         $companyB = Company::firstOrCreate(

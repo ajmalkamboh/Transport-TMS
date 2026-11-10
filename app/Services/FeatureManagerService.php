@@ -89,3 +89,4 @@ class FeatureManagerService
         $company->save();
     }
 }
+
