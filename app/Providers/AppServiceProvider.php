@@ -77,6 +77,32 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(\App\Services\DocumentSequenceService::class)
             );
         });
+
+        $this->app->singleton(\App\Services\FreightCalculationService::class, function () {
+            return new \App\Services\FreightCalculationService();
+        });
+
+        $this->app->singleton(\App\Services\QuotationService::class, function ($app) {
+            return new \App\Services\QuotationService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\FreightCalculationService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\BookingService::class, function ($app) {
+            return new \App\Services\BookingService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\ConsignmentService::class, function ($app) {
+            return new \App\Services\ConsignmentService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
     }
 
     /**

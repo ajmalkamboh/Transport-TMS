@@ -93,6 +93,39 @@
                             </li>
                             @endif
 
+                            @if(auth()->user()->isSuperAdmin() || auth()->user()->isTenantAdmin() || auth()->user()->hasPermission('view_customers') || auth()->user()->hasPermission('view_bookings'))
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Commercial Operations</div>
+                                    <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
+                                </div>
+                                <a class="nav-link {{ request()->routeIs('commercial.customers*') ? 'active' : '' }}" href="{{ route('commercial.customers') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-users"></span></span>
+                                        <span class="nav-link-text ps-1">Customers & Contracts</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('commercial.quotations*') ? 'active' : '' }}" href="{{ route('commercial.quotations') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-file-invoice"></span></span>
+                                        <span class="nav-link-text ps-1">Freight Quotations</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('commercial.bookings*') ? 'active' : '' }}" href="{{ route('commercial.bookings') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-calendar-check"></span></span>
+                                        <span class="nav-link-text ps-1">Cargo Bookings</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('commercial.consignments*') ? 'active' : '' }}" href="{{ route('commercial.consignments') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-receipt"></span></span>
+                                        <span class="nav-link-text ps-1">Consignments (Bilties)</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endif
+
                             @if(auth()->user()->isSuperAdmin())
                             <li class="nav-item">
                                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">

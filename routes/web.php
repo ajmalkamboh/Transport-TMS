@@ -43,6 +43,23 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/alerts', fn() => view('fleet.alerts.index'))->name('alerts');
         });
 
+        // Customer & Commercial Management (Quotations, Bookings, Consignments)
+        Route::prefix('commercial')->name('commercial.')->group(function () {
+            Route::get('/customers', fn() => view('commercial.customers.index'))->name('customers');
+            Route::get('/quotations', fn() => view('commercial.quotations.index'))->name('quotations');
+            Route::get('/bookings', fn() => view('commercial.bookings.index'))->name('bookings');
+            Route::get('/consignments', fn() => view('commercial.consignments.index'))->name('consignments');
+        });
+
+        // Professional Document Printing Gateway
+        Route::prefix('print')->name('print.')->group(function () {
+            Route::get('/quotation/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'quotation'])->name('quotation');
+            Route::get('/booking/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'booking'])->name('booking');
+            Route::get('/consignment/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'consignment'])->name('consignment');
+            Route::get('/cargo-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'cargoReceipt'])->name('cargo-receipt');
+            Route::get('/booking-summary/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'bookingSummary'])->name('booking-summary');
+        });
+
         // Organizational Configuration & Settings
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::get('/company', fn() => view('settings.company'))->name('company');

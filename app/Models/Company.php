@@ -215,6 +215,46 @@ class Company extends Model
     }
 
     /**
+     * Transport clients & commercial customers.
+     */
+    public function customers(): HasMany
+    {
+        return $this->hasMany(\App\Models\Customer::class);
+    }
+
+    /**
+     * Customer commercial contracts.
+     */
+    public function customerContracts(): HasMany
+    {
+        return $this->hasMany(\App\Models\CustomerContract::class);
+    }
+
+    /**
+     * Freight quotations.
+     */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(\App\Models\Quotation::class);
+    }
+
+    /**
+     * Cargo bookings.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(\App\Models\Booking::class);
+    }
+
+    /**
+     * Consignments (Bilties / Lorry Receipts).
+     */
+    public function consignments(): HasMany
+    {
+        return $this->hasMany(\App\Models\Consignment::class);
+    }
+
+    /**
      * Company financial years.
      */
     public function financialYears(): HasMany
