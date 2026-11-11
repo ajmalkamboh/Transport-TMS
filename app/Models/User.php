@@ -61,7 +61,7 @@ class User extends Authenticatable
             /** @var \App\Services\TenantContextService $tenantContext */
             $tenantContext = app(\App\Services\TenantContextService::class);
 
-            if ($tenantContext->isSuperAdmin() && $tenantContext->isBypassingTenant()) {
+            if ($tenantContext->isBypassingTenant() || $tenantContext->isSuperAdmin()) {
                 return;
             }
 

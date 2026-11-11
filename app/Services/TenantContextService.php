@@ -101,7 +101,7 @@ class TenantContextService
      */
     public function isSuperAdmin(): bool
     {
-        if (auth()->check()) {
+        if (auth()->hasUser()) {
             return (bool) (auth()->user()->is_super_admin ?? false);
         }
         return false;
