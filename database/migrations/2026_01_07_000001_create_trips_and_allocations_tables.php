@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
+            $table->foreignId('vehicle_id')->nullable()->constrained('vehicles')->nullOnDelete();
+            $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->string('trip_number', 50); // e.g. TR-2026-00001
             $table->date('trip_date');
 
@@ -35,6 +37,7 @@ return new class extends Migration
             $table->unsignedInteger('total_consignments_count')->default(0);
             $table->unsignedInteger('total_packages_count')->default(0);
             $table->decimal('total_weight_tons', 10, 2)->default(0.00);
+            $table->decimal('total_freight_amount', 14, 2)->default(0.00);
 
             // Operational Lifecycle
             $table->enum('trip_status', [

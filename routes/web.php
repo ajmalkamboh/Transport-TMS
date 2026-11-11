@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BranchSwitchController;
+use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentDownloadController;
+use App\Http\Controllers\MobileDriverController;
+use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\Saas\SaasController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\VehicleOwnerPortalController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Authentication Routes
@@ -119,6 +123,36 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/financial', fn() => view('settings.financial'))->name('financial');
             Route::get('/master-data', fn() => view('settings.master-data'))->name('master-data');
         });
+
+        // Mobile Driver Portal Routes (PWA / Touch Optimized)
+        Route::prefix('mobile/driver')->name('mobile.driver.')->group(function () {
+            Route::get('/dashboard', [MobileDriverController::class, 'dashboard'])->name('dashboard');
+            Route::get('/trips/{trip}', [MobileDriverController::class, 'tripDetail'])->name('trip.detail');
+            Route::post('/trips/{trip}/start', [MobileDriverController::class, 'startTrip'])->name('trip.start');
+            Route::post('/trips/{trip}/checkpoint', [MobileDriverController::class, 'addCheckpoint'])->name('trip.checkpoint');
+            Route::post('/trips/{trip}/expense', [MobileDriverController::class, 'submitExpense'])->name('trip.expense');
+            Route::post('/trips/{trip}/deliver', [MobileDriverController::class, 'confirmDelivery'])->name('trip.deliver');
+            Route::post('/trips/{trip}/complete', [MobileDriverController::class, 'completeTrip'])->name('trip.complete');
+            Route::post('/location', [MobileDriverController::class, 'recordLocation'])->name('location');
+        });
+
+        // Customer Portal Routes
+        Route::prefix('portal/customer')->name('portal.customer.')->group(function () {
+            Route::get('/dashboard', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
+            Route::get('/consignments', [CustomerPortalController::class, 'consignments'])->name('consignments');
+            Route::get('/consignments/{consignment}', [CustomerPortalController::class, 'consignmentDetail'])->name('consignment.detail');
+            Route::get('/invoices', [CustomerPortalController::class, 'invoices'])->name('invoices');
+            Route::get('/pod/{pod}/download', [CustomerPortalController::class, 'downloadPod'])->name('pod.download');
+        });
+
+        // Vehicle Owner Portal Routes
+        Route::prefix('portal/owner')->name('portal.owner.')->group(function () {
+            Route::get('/dashboard', [VehicleOwnerPortalController::class, 'dashboard'])->name('dashboard');
+            Route::get('/vehicles', [VehicleOwnerPortalController::class, 'vehicles'])->name('vehicles');
+            Route::get('/trips', [VehicleOwnerPortalController::class, 'trips'])->name('trips');
+            Route::get('/settlements', [VehicleOwnerPortalController::class, 'settlements'])->name('settlements');
+            Route::get('/settlements/{settlement}', [VehicleOwnerPortalController::class, 'settlementDetail'])->name('settlement.detail');
+        });
     });
 
     // Platform Super Admin SaaS Governance Routes
@@ -129,4 +163,43 @@ Route::middleware(['auth', 'user.active'])->group(function () {
         Route::get('/billing', [SaasController::class, 'billing'])->name('billing');
     });
 });
+
+// Production Health Check Monitoring Probe
+Route::get('/health', function () {
+    $dbOk = false;
+    $cacheOk = false;
+    $storageOk = false;
+
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        $dbOk = true;
+    } catch (\Throwable $e) {}
+
+    try {
+        \Illuminate\Support\Facades\Cache::put('health_check', true, 10);
+        $cacheOk = \Illuminate\Support\Facades\Cache::get('health_check') === true;
+    } catch (\Throwable $e) {}
+
+    try {
+        $testFile = storage_path('app/health.txt');
+        \Illuminate\Support\Facades\File::put($testFile, 'ok');
+        $storageOk = \Illuminate\Support\Facades\File::get($testFile) === 'ok';
+        \Illuminate\Support\Facades\File::delete($testFile);
+    } catch (\Throwable $e) {}
+
+    $status = ($dbOk && $cacheOk && $storageOk) ? 'healthy' : 'degraded';
+    $code = $status === 'healthy' ? 200 : 503;
+
+    return response()->json([
+        'status' => $status,
+        'timestamp' => now()->toIso8601String(),
+        'services' => [
+            'database' => $dbOk ? 'up' : 'down',
+            'cache' => $cacheOk ? 'up' : 'down',
+            'storage' => $storageOk ? 'writable' : 'readonly',
+        ],
+        'version' => '1.0.0',
+        'php' => PHP_VERSION,
+    ], $code);
+})->name('health');
 

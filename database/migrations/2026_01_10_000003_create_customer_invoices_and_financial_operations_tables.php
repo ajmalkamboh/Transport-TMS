@@ -38,6 +38,7 @@ return new class extends Migration
                 'posted',
                 'paid',
                 'partially_paid',
+                'unpaid',
                 'cancelled',
                 'reversed'
             ])->default('draft');

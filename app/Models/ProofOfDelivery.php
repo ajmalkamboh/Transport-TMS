@@ -32,6 +32,7 @@ class ProofOfDelivery extends Model
         'short_quantity',
         'gps_latitude',
         'gps_longitude',
+        'file_path',
         'signature_file_path',
         'document_file_path',
         'photo_file_path',
@@ -40,6 +41,37 @@ class ProofOfDelivery extends Model
         'verified_by',
         'verified_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (ProofOfDelivery $pod) {
+            if (empty($pod->consignment_id) && !empty($pod->trip_consignment_id)) {
+                $alloc = TripConsignment::find($pod->trip_consignment_id);
+                if ($alloc) {
+                    $pod->consignment_id = $alloc->consignment_id;
+                    if (empty($pod->delivered_quantity)) {
+                        $pod->delivered_quantity = $alloc->delivered_quantity ?: $alloc->assigned_quantity;
+                    }
+                }
+            }
+            if (empty($pod->delivery_datetime)) {
+                $pod->delivery_datetime = now();
+            }
+            if (empty($pod->delivered_quantity)) {
+                $pod->delivered_quantity = 1;
+            }
+        });
+    }
+
+    public function setFilePathAttribute($value): void
+    {
+        $this->attributes['document_file_path'] = $value;
+    }
+
+    public function getFilePathAttribute(): ?string
+    {
+        return $this->attributes['document_file_path'] ?? null;
+    }
 
     protected $casts = [
         'delivery_datetime' => 'datetime',

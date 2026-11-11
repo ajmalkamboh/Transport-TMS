@@ -47,6 +47,7 @@ class JournalVoucher extends Model
         'vehicle_id',
         'reference_number',
         'narration',
+        'description',
         'created_by',
         'posted_by',
         'posted_at',
@@ -66,6 +67,16 @@ class JournalVoucher extends Model
     public function items(): HasMany
     {
         return $this->hasMany(JournalVoucherItem::class, 'journal_voucher_id');
+    }
+
+    public function setDescriptionAttribute($value): void
+    {
+        $this->attributes['narration'] = $value;
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        return $this->attributes['narration'] ?? null;
     }
 
     public function branch(): BelongsTo

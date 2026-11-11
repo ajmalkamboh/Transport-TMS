@@ -43,6 +43,15 @@ class TripResource extends Model
         'override_allowed' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (TripResource $resource) {
+            if (empty($resource->assigned_at)) {
+                $resource->assigned_at = now();
+            }
+        });
+    }
+
     public function trip(): BelongsTo
     {
         return $this->belongsTo(Trip::class);

@@ -151,6 +151,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'cnic_number' => '42101-1234567-1',
             'phone' => '0300-1122334',
             'license_number' => 'HTV-KHI-9988',
+            'license_expiry_date' => now()->addYears(2)->toDateString(),
             'status' => Driver::STATUS_AVAILABLE,
         ]);
 
@@ -226,6 +227,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
         // En-route trip expense
         TripExpense::create([
             'company_id' => $this->companyA->id,
+            'voucher_number' => 'EXP-001',
             'trip_id' => $trip->id,
             'vehicle_id' => $this->vehicleA->id,
             'driver_id' => $this->driverA->id,
@@ -272,6 +274,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'branch_id' => $this->branchKHI->id,
             'settlement_number' => 'STL-KAR-001',
             'vehicle_owner_id' => $this->ownerA->id,
+            'vehicle_id' => $this->vehicleA->id,
             'settlement_date' => now()->toDateString(),
             'agreed_owner_payable' => 180000.0,
             'approved_deductions' => 10000.0,
@@ -307,8 +310,10 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'branch_id' => $this->branchKHI->id,
             'trip_number' => 'TRP-FLT-01',
             'trip_date' => now()->toDateString(),
+            'origin_city' => 'Karachi',
+            'destination_city' => 'Lahore',
             'vehicle_id' => $this->vehicleA->id,
-            'status' => Trip::STATUS_COMPLETED,
+            'trip_status' => Trip::STATUS_OPERATIONALLY_COMPLETED,
             'total_freight_amount' => 300000.0,
         ]);
 
@@ -330,6 +335,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'job_card_number' => 'JC-FLT-01',
             'vehicle_id' => $this->vehicleA->id,
             'scheduled_date' => now()->toDateString(),
+            'odometer_km' => 121400,
             'labour_charges' => 5000.0,
             'parts_total_cost' => 15000.0,
             'total_cost' => 20000.0,
@@ -364,10 +370,13 @@ class TmsReportingAndAnalyticsTest extends TestCase
         // Trips for Driver A
         Trip::create([
             'company_id' => $this->companyA->id,
+            'branch_id' => $this->branchKHI->id,
             'trip_number' => 'TRP-DRV-01',
             'trip_date' => now()->toDateString(),
+            'origin_city' => 'Karachi',
+            'destination_city' => 'Multan',
             'driver_id' => $this->driverA->id,
-            'status' => Trip::STATUS_COMPLETED,
+            'trip_status' => Trip::STATUS_OPERATIONALLY_COMPLETED,
         ]);
 
         // Driver Voyage Settlement
@@ -531,6 +540,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'company_id' => $this->companyA->id,
             'branch_id' => $this->branchKHI->id,
             'vehicle_owner_id' => $this->ownerA->id,
+            'vehicle_id' => $this->vehicleA->id,
             'settlement_number' => 'STL-002',
             'settlement_date' => now()->toDateString(),
             'agreed_owner_payable' => 120000.0,
@@ -628,6 +638,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
             'branch_id' => $this->branchKHI->id,
             'job_card_number' => 'JC-REP-01',
             'vehicle_id' => $this->vehicleA->id,
+            'odometer_km' => 121000,
             'scheduled_date' => now()->toDateString(),
             'total_cost' => 5000.0,
             'status' => JobCard::STATUS_COMPLETED,
@@ -715,7 +726,7 @@ class TmsReportingAndAnalyticsTest extends TestCase
         // Test Livewire component initialization and tab switching
         Livewire::test(ReportCenter::class)
             ->assertStatus(200)
-            ->assertSee('TMS Reports & Business Intelligence')
+            ->assertSee('TMS Reports')
             ->set('activeTab', 'fleet')
             ->assertSee('Reg # / Fleet #')
             ->set('activeTab', 'customer')

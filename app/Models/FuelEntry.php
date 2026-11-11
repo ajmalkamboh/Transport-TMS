@@ -72,6 +72,18 @@ class FuelEntry extends Model
         'is_suspicious' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (FuelEntry $entry) {
+            if (empty($entry->entry_number)) {
+                $entry->entry_number = 'FE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+            }
+            if (empty($entry->rate_per_liter) && !empty($entry->quantity_liters) && !empty($entry->total_amount)) {
+                $entry->rate_per_liter = round((float)$entry->total_amount / (float)$entry->quantity_liters, 2);
+            }
+        });
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

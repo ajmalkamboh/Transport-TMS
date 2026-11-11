@@ -22,6 +22,9 @@ class User extends Authenticatable
     protected $fillable = [
         'company_id',
         'branch_id',
+        'customer_id',
+        'vehicle_owner_id',
+        'driver_id',
         'role_id',
         'name',
         'email',
@@ -92,6 +95,21 @@ class User extends Authenticatable
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    public function vehicleOwner(): BelongsTo
+    {
+        return $this->belongsTo(VehicleOwner::class, 'vehicle_owner_id');
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
     }
 
     /**

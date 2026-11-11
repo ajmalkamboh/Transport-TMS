@@ -9,6 +9,7 @@ yarn-error.log
 .phpunit.result.cache
 
 /storage/*.key
+/storage/app/backups/*
 /storage/app/private/*
 /storage/app/public/*
 /storage/framework/cache/*
@@ -16,6 +17,7 @@ yarn-error.log
 /storage/framework/views/*
 /storage/logs/*
 !storage/app/.gitignore
+!storage/app/backups/.gitignore
 !storage/app/public/.gitignore
 !storage/framework/cache/.gitignore
 !storage/framework/sessions/.gitignore

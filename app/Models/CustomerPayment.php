@@ -38,6 +38,7 @@ class CustomerPayment extends Model
         'bank_account_id',
         'receipt_number',
         'receipt_date',
+        'payment_date',
         'amount',
         'payment_type',
         'unapplied_amount',

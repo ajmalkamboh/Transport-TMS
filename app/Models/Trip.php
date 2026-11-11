@@ -34,6 +34,8 @@ class Trip extends Model
     protected $fillable = [
         'company_id',
         'branch_id',
+        'vehicle_id',
+        'driver_id',
         'trip_number',
         'trip_date',
         'origin_city',
@@ -49,7 +51,9 @@ class Trip extends Model
         'total_consignments_count',
         'total_packages_count',
         'total_weight_tons',
+        'total_freight_amount',
         'trip_status',
+        'status',
         'financial_status',
         'loading_started_at',
         'loading_completed_at',
@@ -73,6 +77,7 @@ class Trip extends Model
         'total_consignments_count' => 'integer',
         'total_packages_count' => 'integer',
         'total_weight_tons' => 'decimal:2',
+        'total_freight_amount' => 'decimal:2',
         'loading_started_at' => 'datetime',
         'loading_completed_at' => 'datetime',
         'operationally_completed_at' => 'datetime',
@@ -82,6 +87,16 @@ class Trip extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class);
     }
 
     public function dispatcher(): BelongsTo
@@ -161,6 +176,10 @@ class Trip extends Model
 
     public function primaryVehicle(): ?Vehicle
     {
+        if ($this->vehicle_id) {
+            return $this->getRelationValue('vehicle');
+        }
+
         return $this->resources()
             ->where('resource_type', 'vehicle')
             ->where('role', 'primary_vehicle')
@@ -171,22 +190,16 @@ class Trip extends Model
 
     public function primaryDriver(): ?Driver
     {
+        if ($this->driver_id) {
+            return $this->getRelationValue('driver');
+        }
+
         return $this->resources()
             ->where('resource_type', 'driver')
             ->where('role', 'primary_driver')
             ->where('is_active', true)
             ->first()
             ?->driver;
-    }
-
-    public function getVehicleAttribute(): ?Vehicle
-    {
-        return $this->primaryVehicle();
-    }
-
-    public function getDriverAttribute(): ?Driver
-    {
-        return $this->primaryDriver();
     }
 
     public function isOperationallyCompleted(): bool

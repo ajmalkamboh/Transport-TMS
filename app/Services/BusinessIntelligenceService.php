@@ -49,6 +49,8 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         // 1. Fleet Metrics
         $vehicleQuery = Vehicle::withoutGlobalScopes()->where('company_id', $companyId);
@@ -73,10 +75,10 @@ class BusinessIntelligenceService
         if ($branchId) {
             $tripQuery->where('branch_id', $branchId);
         }
-        $tripsInProgress = (clone $tripQuery)->whereIn('status', [Trip::STATUS_PLANNED, Trip::STATUS_DISPATCHED, Trip::STATUS_IN_TRANSIT, 'loading'])->count();
+        $tripsInProgress = (clone $tripQuery)->whereIn('trip_status', [Trip::STATUS_PLANNED, Trip::STATUS_DISPATCHED, Trip::STATUS_IN_TRANSIT, 'loading'])->count();
         $completedTrips = (clone $tripQuery)
-            ->where('status', Trip::STATUS_COMPLETED)
-            ->whereBetween('trip_date', [$fromDate, $toDate])
+            ->where('trip_status', Trip::STATUS_OPERATIONALLY_COMPLETED)
+            ->whereBetween('trip_date', [$fromDate, $toDateTime])
             ->count();
 
         // 4. Consignment & Delivery Metrics
@@ -93,8 +95,8 @@ class BusinessIntelligenceService
 
         // 5. Freight Revenue in Period
         $monthlyFreightRevenue = (float) (clone $tripQuery)
-            ->whereBetween('trip_date', [$fromDate, $toDate])
-            ->where('status', '!=', Trip::STATUS_CANCELLED)
+            ->whereBetween('trip_date', [$fromDate, $toDateTime])
+            ->where('trip_status', '!=', Trip::STATUS_CANCELLED)
             ->sum('total_freight_amount');
 
         // If trip freight is 0, check customer invoices billed in period
@@ -103,14 +105,14 @@ class BusinessIntelligenceService
             if ($branchId) {
                 $invQuery->where('branch_id', $branchId);
             }
-            $monthlyFreightRevenue = (float) $invQuery->whereBetween('invoice_date', [$fromDate, $toDate])->sum('total_amount');
+            $monthlyFreightRevenue = (float) $invQuery->whereBetween('invoice_date', [$fromDate, $toDateTime])->sum('total_amount');
         }
 
         // 6. Direct Trip Expenses (En-route expenses + refuel costs)
         $expenseQuery = TripExpense::withoutGlobalScopes()
             ->join('trips', 'trip_expenses.trip_id', '=', 'trips.id')
             ->where('trips.company_id', $companyId)
-            ->whereBetween('trip_expenses.expense_date', [$fromDate, $toDate])
+            ->whereBetween('trip_expenses.expense_date', [$fromDate, $toDateTime])
             ->where('trip_expenses.status', TripExpense::STATUS_APPROVED);
         if ($branchId) {
             $expenseQuery->where('trips.branch_id', $branchId);
@@ -119,11 +121,11 @@ class BusinessIntelligenceService
 
         $fuelQuery = FuelEntry::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('entry_date', [$fromDate, $toDate]);
+            ->whereBetween('entry_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $fuelQuery->where('branch_id', $branchId);
         }
-        $fuelCost = (float) $fuelQuery->sum('total_cost');
+        $fuelCost = (float) $fuelQuery->sum('total_amount');
 
         $totalTripExpenses = $directTripExpenses + $fuelCost;
 
@@ -190,6 +192,8 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $query = Vehicle::withoutGlobalScopes()
             ->with(['branch', 'owner'])
@@ -213,7 +217,7 @@ class BusinessIntelligenceService
             $trips = Trip::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('vehicle_id', $v->id)
-                ->whereBetween('trip_date', [$fromDate, $toDate])
+                ->whereBetween('trip_date', [$fromDate, $toDateTime])
                 ->get();
 
             $tripCount = $trips->count();
@@ -223,11 +227,11 @@ class BusinessIntelligenceService
             $fuelEntries = FuelEntry::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('vehicle_id', $v->id)
-                ->whereBetween('entry_date', [$fromDate, $toDate])
+                ->whereBetween('entry_date', [$fromDate, $toDateTime])
                 ->get();
 
-            $totalFuelLiters = (float) $fuelEntries->sum('fuel_quantity_liters');
-            $totalFuelCost = (float) $fuelEntries->sum('total_cost');
+            $totalFuelLiters = (float) $fuelEntries->sum('quantity_liters');
+            $totalFuelCost = (float) $fuelEntries->sum('total_amount');
 
             // Distance travelled in period
             $distanceKm = (float) $fuelEntries->sum('distance_km');
@@ -240,7 +244,7 @@ class BusinessIntelligenceService
             $jobCards = JobCard::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('vehicle_id', $v->id)
-                ->whereBetween('scheduled_date', [$fromDate, $toDate])
+                ->whereBetween('scheduled_date', [$fromDate, $toDateTime])
                 ->get();
 
             $maintenanceCount = $jobCards->count();
@@ -251,7 +255,7 @@ class BusinessIntelligenceService
             $tripExpenses = (float) TripExpense::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('vehicle_id', $v->id)
-                ->whereBetween('expense_date', [$fromDate, $toDate])
+                ->whereBetween('expense_date', [$fromDate, $toDateTime])
                 ->where('status', TripExpense::STATUS_APPROVED)
                 ->sum('amount');
 
@@ -304,6 +308,8 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $query = Driver::withoutGlobalScopes()
             ->with('branch')
@@ -322,18 +328,21 @@ class BusinessIntelligenceService
         foreach ($drivers as $d) {
             $trips = Trip::withoutGlobalScopes()
                 ->where('company_id', $companyId)
-                ->where('driver_id', $d->id)
-                ->whereBetween('trip_date', [$fromDate, $toDate])
+                ->where(function ($q) use ($d) {
+                    $q->where('driver_id', $d->id)
+                      ->orWhereHas('resources', fn($r) => $r->where('driver_id', $d->id));
+                })
+                ->whereBetween('trip_date', [$fromDate, $toDateTime])
                 ->get();
 
             $totalTrips = $trips->count();
-            $completedTrips = $trips->where('status', Trip::STATUS_COMPLETED)->count();
+            $completedTrips = $trips->filter(fn($t) => in_array($t->trip_status, [Trip::STATUS_OPERATIONALLY_COMPLETED, Trip::STATUS_CLOSED]))->count();
 
             // Driver settlements & advances
             $settlements = DriverSettlement::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('driver_id', $d->id)
-                ->whereBetween('settlement_date', [$fromDate, $toDate])
+                ->whereBetween('settlement_date', [$fromDate, $toDateTime])
                 ->get();
 
             $totalAdvances = (float) $settlements->sum('advance_amount');
@@ -344,7 +353,7 @@ class BusinessIntelligenceService
             $allowances = (float) TripExpense::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('driver_id', $d->id)
-                ->whereBetween('expense_date', [$fromDate, $toDate])
+                ->whereBetween('expense_date', [$fromDate, $toDateTime])
                 ->where('expense_category', 'driver_allowance')
                 ->where('status', TripExpense::STATUS_APPROVED)
                 ->sum('amount');
@@ -421,8 +430,8 @@ class BusinessIntelligenceService
                 $dueDate = Carbon::parse($inv->due_date);
                 $daysOverdue = $asOfCarbon->diffInDays($dueDate, false);
 
-                // If daysOverdue >= 0, it is not yet overdue or within 30 days
-                $age = $asOfCarbon->diffInDays(Carbon::parse($inv->invoice_date));
+                // Age in days relative to as-of date
+                $age = abs((int) $asOfCarbon->diffInDays(Carbon::parse($inv->invoice_date), false));
 
                 if ($age <= 30) {
                     $current0To30 += $balance;
@@ -482,17 +491,19 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $query = Trip::withoutGlobalScopes()
             ->with(['branch', 'vehicle', 'driver'])
             ->where('company_id', $companyId)
-            ->whereBetween('trip_date', [$fromDate, $toDate]);
+            ->whereBetween('trip_date', [$fromDate, $toDateTime]);
 
         if ($branchId) {
             $query->where('branch_id', $branchId);
         }
         if ($statusFilter) {
-            $query->where('status', $statusFilter);
+            $query->where('trip_status', $statusFilter);
         }
 
         $trips = $query->orderBy('trip_date', 'desc')->get();
@@ -509,7 +520,7 @@ class BusinessIntelligenceService
 
             $fuel = (float) FuelEntry::withoutGlobalScopes()
                 ->where('trip_id', $t->id)
-                ->sum('total_cost');
+                ->sum('total_amount');
 
             $totalCost = $expenses + $fuel;
             $netMargin = $freight - $totalCost;
@@ -563,11 +574,13 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $query = Trip::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('trip_date', [$fromDate, $toDate])
-            ->where('status', '!=', Trip::STATUS_CANCELLED);
+            ->whereBetween('trip_date', [$fromDate, $toDateTime])
+            ->where('trip_status', '!=', Trip::STATUS_CANCELLED);
 
         if ($branchId) {
             $query->where('branch_id', $branchId);
@@ -610,6 +623,8 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $query = VehicleOwner::withoutGlobalScopes()->where('company_id', $companyId);
         if ($ownerId) {
@@ -623,7 +638,7 @@ class BusinessIntelligenceService
             $settlements = OwnerSettlement::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('vehicle_owner_id', $ow->id)
-                ->whereBetween('settlement_date', [$fromDate, $toDate])
+                ->whereBetween('settlement_date', [$fromDate, $toDateTime])
                 ->get();
 
             $totalAgreedFreight = (float) $settlements->sum('agreed_owner_payable');
@@ -669,11 +684,12 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfYear()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         // 1. Inflows from Customers (Customer Collections)
         $customerCollectionsQuery = CustomerPayment::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('payment_date', [$fromDate, $toDate]);
+            ->whereBetween('receipt_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $customerCollectionsQuery->where('branch_id', $branchId);
         }
@@ -682,17 +698,17 @@ class BusinessIntelligenceService
         // 2. Outflows: Fuel Refuel Cash / Bank Payments
         $fuelOutflowsQuery = FuelEntry::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('entry_date', [$fromDate, $toDate]);
+            ->whereBetween('entry_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $fuelOutflowsQuery->where('branch_id', $branchId);
         }
-        $cashOutflowsFuel = (float) $fuelOutflowsQuery->sum('total_cost');
+        $cashOutflowsFuel = (float) $fuelOutflowsQuery->sum('total_amount');
 
         // 3. Outflows: Trip En-Route Expenses
         $tripExpenseOutflowQuery = TripExpense::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('status', TripExpense::STATUS_APPROVED)
-            ->whereBetween('expense_date', [$fromDate, $toDate]);
+            ->whereBetween('expense_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $tripExpenseOutflowQuery->where('branch_id', $branchId);
         }
@@ -701,7 +717,7 @@ class BusinessIntelligenceService
         // 4. Outflows: Third-Party Vehicle Owner Settlements Paid
         $ownerPaymentsQuery = OwnerSettlement::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('settlement_date', [$fromDate, $toDate]);
+            ->whereBetween('settlement_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $ownerPaymentsQuery->where('branch_id', $branchId);
         }
@@ -710,7 +726,7 @@ class BusinessIntelligenceService
         // 5. Outflows: Trade Parts & Supplies Payments
         $supplierPaymentQuery = \App\Models\SupplierPayment::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->whereBetween('payment_date', [$fromDate, $toDate]);
+            ->whereBetween('payment_date', [$fromDate, $toDateTime]);
         if ($branchId) {
             $supplierPaymentQuery->where('branch_id', $branchId);
         }
@@ -752,6 +768,7 @@ class BusinessIntelligenceService
     ): array {
         $fromDate = $fromDate ?? now()->startOfMonth()->toDateString();
         $toDate = $toDate ?? now()->toDateString();
+        $toDateTime = Carbon::parse($toDate)->endOfDay()->toDateTimeString();
 
         $stockQuery = WarehouseStock::withoutGlobalScopes()
             ->with(['warehouse', 'item.primaryUom', 'item.category'])
@@ -799,7 +816,7 @@ class BusinessIntelligenceService
             ->leftJoin('vehicles', 'job_cards.vehicle_id', '=', 'vehicles.id')
             ->where('job_card_items.company_id', $companyId)
             ->where('job_card_items.is_inventory_item', true)
-            ->whereBetween('job_cards.scheduled_date', [$fromDate, $toDate])
+            ->whereBetween('job_cards.scheduled_date', [$fromDate, $toDateTime])
             ->select(
                 'job_card_items.part_name',
                 'job_card_items.part_number',

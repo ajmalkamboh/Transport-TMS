@@ -21,10 +21,12 @@ class TripCheckpoint extends Model
         'company_id',
         'trip_id',
         'checkpoint_name',
+        'location_name',
         'stop_order',
         'planned_arrival',
         'planned_departure',
         'actual_arrival',
+        'arrival_time',
         'actual_departure',
         'delay_minutes',
         'delay_reason',
@@ -46,6 +48,26 @@ class TripCheckpoint extends Model
     public function trip(): BelongsTo
     {
         return $this->belongsTo(Trip::class);
+    }
+
+    public function setLocationNameAttribute($value): void
+    {
+        $this->attributes['checkpoint_name'] = $value;
+    }
+
+    public function getLocationNameAttribute(): ?string
+    {
+        return $this->attributes['checkpoint_name'] ?? null;
+    }
+
+    public function setArrivalTimeAttribute($value): void
+    {
+        $this->attributes['actual_arrival'] = $value;
+    }
+
+    public function getArrivalTimeAttribute(): mixed
+    {
+        return $this->actual_arrival;
     }
 
     public function markPassed(?int $odometer = null, int $delay = 0, ?string $delayReason = null): void

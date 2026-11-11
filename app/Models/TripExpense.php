@@ -62,6 +62,18 @@ class TripExpense extends Model
         'posted_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (TripExpense $expense) {
+            if (empty($expense->voucher_number)) {
+                $expense->voucher_number = 'EXP-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+            }
+            if (empty($expense->expense_date)) {
+                $expense->expense_date = now()->toDateString();
+            }
+        });
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
