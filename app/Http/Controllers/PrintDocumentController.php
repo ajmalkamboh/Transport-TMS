@@ -150,5 +150,57 @@ class PrintDocumentController extends Controller
 
         return view('print.owner-ledger', compact('owner', 'ledgerSummary', 'fromDate', 'toDate'));
     }
+
+    public function customerInvoice(int $id)
+    {
+        $invoice = \App\Models\CustomerInvoice::withoutGlobalScopes()
+            ->with(['company', 'branch', 'customer', 'items', 'voucher'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($invoice);
+
+        return view('print.customer-invoice', compact('invoice'));
+    }
+
+    public function customerReceipt(int $id)
+    {
+        $receipt = \App\Models\CustomerPayment::withoutGlobalScopes()
+            ->with(['company', 'branch', 'customer', 'invoice', 'voucher'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($receipt);
+
+        return view('print.customer-receipt', compact('receipt'));
+    }
+
+    public function journalVoucher(int $id)
+    {
+        $voucher = \App\Models\JournalVoucher::withoutGlobalScopes()
+            ->with(['company', 'branch', 'items.account', 'createdByUser', 'postedByUser'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($voucher);
+
+        return view('print.journal-voucher', compact('voucher'));
+    }
+
+    public function driverSettlement(int $id)
+    {
+        $settlement = \App\Models\DriverSettlement::withoutGlobalScopes()
+            ->with(['company', 'branch', 'driver', 'trip', 'voucher'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($settlement);
+
+        return view('print.driver-settlement', compact('settlement'));
+    }
+
+    public function tripProfitability(int $tripId)
+    {
+        $trip = \App\Models\Trip::withoutGlobalScopes()
+            ->with(['company', 'resources.vehicle', 'resources.driver', 'branch'])
+            ->findOrFail($tripId);
+        $this->tenantAuth->validateTenantOwnership($trip);
+
+        $report = app(\App\Services\FinancialReportService::class)->getTripProfitability($trip->company_id, $trip->id);
+
+        return view('print.trip-profitability', compact('trip', 'report'));
+    }
 }
 

@@ -27,6 +27,8 @@ class DocumentSequence extends Model
     public const TYPE_PURCHASE_ORDER = 'purchase_order';
     public const TYPE_FUEL_ENTRY = 'fuel_entry';
     public const TYPE_JOB_CARD = 'job_card';
+    public const TYPE_DRIVER_SETTLEMENT = 'driver_settlement';
+    public const TYPE_CONTRA_VOUCHER = 'contra_voucher';
 
     public const CORE_ELEVEN_TYPES = [
         self::TYPE_QUOTATION => ['label' => 'Freight Quotation', 'default_prefix' => 'QT'],
@@ -56,6 +58,8 @@ class DocumentSequence extends Model
         self::TYPE_PURCHASE_ORDER => ['label' => 'Parts & Fuel Purchase Order', 'default_prefix' => 'PO'],
         self::TYPE_FUEL_ENTRY => ['label' => 'Fuel Refuel & Issue Slip', 'default_prefix' => 'FL'],
         self::TYPE_JOB_CARD => ['label' => 'Workshop Job Card', 'default_prefix' => 'JC'],
+        self::TYPE_DRIVER_SETTLEMENT => ['label' => 'Driver Voyage Settlement', 'default_prefix' => 'DS'],
+        self::TYPE_CONTRA_VOUCHER => ['label' => 'Bank / Cash Contra Voucher', 'default_prefix' => 'CV'],
     ];
 
     protected $fillable = [

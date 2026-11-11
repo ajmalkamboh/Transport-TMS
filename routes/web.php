@@ -60,8 +60,14 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/expenses', fn() => view('operations.expenses.index'))->name('expenses');
         });
 
-        // Finance & Owner Settlements
+        // Finance, General Ledger, Billing & Settlements
         Route::prefix('finance')->name('finance.')->group(function () {
+            Route::get('/chart-of-accounts', fn() => view('finance.chart-of-accounts.index'))->name('chart-of-accounts');
+            Route::get('/vouchers', fn() => view('finance.vouchers.index'))->name('vouchers');
+            Route::get('/invoices', fn() => view('finance.invoices.index'))->name('invoices');
+            Route::get('/banking', fn() => view('finance.banking.index'))->name('banking');
+            Route::get('/reports', fn() => view('finance.reports.index'))->name('reports');
+            Route::get('/driver-settlements', fn() => view('finance.driver-settlements.index'))->name('driver-settlements');
             Route::get('/settlements', fn() => view('finance.settlements.index'))->name('settlements');
         });
 
@@ -81,6 +87,11 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/owner-settlement/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerSettlement'])->name('owner-settlement');
             Route::get('/owner-payment/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerPayment'])->name('owner-payment');
             Route::get('/owner-ledger/{ownerId}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerLedger'])->name('owner-ledger');
+            Route::get('/customer-invoice/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'customerInvoice'])->name('customer-invoice');
+            Route::get('/customer-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'customerReceipt'])->name('customer-receipt');
+            Route::get('/journal-voucher/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'journalVoucher'])->name('journal-voucher');
+            Route::get('/driver-settlement/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'driverSettlement'])->name('driver-settlement');
+            Route::get('/trip-profitability/{tripId}', [\App\Http\Controllers\PrintDocumentController::class, 'tripProfitability'])->name('trip-profitability');
         });
 
         // Organizational Configuration & Settings

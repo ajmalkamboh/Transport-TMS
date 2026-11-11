@@ -164,13 +164,49 @@
 
                             <li class="nav-item">
                                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                                    <div class="col-auto navbar-vertical-label">Finance & Settlements</div>
+                                    <div class="col-auto navbar-vertical-label">Finance & General Ledger</div>
                                     <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
                                 </div>
-                                <a class="nav-link {{ request()->routeIs('finance.settlements*') ? 'active' : '' }}" href="{{ route('finance.settlements') }}">
+                                <a class="nav-link {{ request()->routeIs('finance.chart-of-accounts*') ? 'active' : '' }}" href="{{ route('finance.chart-of-accounts') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-sitemap"></span></span>
+                                        <span class="nav-link-text ps-1">Chart of Accounts</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.vouchers*') ? 'active' : '' }}" href="{{ route('finance.vouchers') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-book"></span></span>
+                                        <span class="nav-link-text ps-1">Vouchers & GL</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.invoices*') ? 'active' : '' }}" href="{{ route('finance.invoices') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
+                                        <span class="nav-link-text ps-1">Customer Invoicing</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.banking*') ? 'active' : '' }}" href="{{ route('finance.banking') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-university"></span></span>
+                                        <span class="nav-link-text ps-1">Bank & Cashbook</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.driver-settlements*') ? 'active' : '' }}" href="{{ route('finance.driver-settlements') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-id-card-alt"></span></span>
+                                        <span class="nav-link-text ps-1">Driver Settlements</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.settlements*') ? 'active' : '' }}" href="{{ route('finance.settlements') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-hand-holding-usd"></span></span>
                                         <span class="nav-link-text ps-1">Owner Settlements</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('finance.reports*') ? 'active' : '' }}" href="{{ route('finance.reports') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-chart-line"></span></span>
+                                        <span class="nav-link-text ps-1">Financial Statements</span>
                                     </div>
                                 </a>
                             </li>

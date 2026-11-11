@@ -144,9 +144,58 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        $this->app->singleton(\App\Services\ChartOfAccountsService::class, function () {
+            return new \App\Services\ChartOfAccountsService();
+        });
+
+        $this->app->singleton(\App\Services\GeneralLedgerService::class, function ($app) {
+            return new \App\Services\GeneralLedgerService(
+                $app->make(\App\Services\FinancialPeriodService::class),
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\AuditLogService::class),
+                $app->make(\App\Services\TenantContextService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\BillingAndReceivableService::class, function ($app) {
+            return new \App\Services\BillingAndReceivableService(
+                $app->make(\App\Services\GeneralLedgerService::class),
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\ChartOfAccountsService::class),
+                $app->make(\App\Services\AuditLogService::class),
+                $app->make(\App\Services\TenantContextService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\DriverAccountService::class, function ($app) {
+            return new \App\Services\DriverAccountService(
+                $app->make(\App\Services\GeneralLedgerService::class),
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\ChartOfAccountsService::class),
+                $app->make(\App\Services\AuditLogService::class),
+                $app->make(\App\Services\TenantContextService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\BankManagementService::class, function ($app) {
+            return new \App\Services\BankManagementService(
+                $app->make(\App\Services\GeneralLedgerService::class),
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\ChartOfAccountsService::class),
+                $app->make(\App\Services\AuditLogService::class),
+                $app->make(\App\Services\TenantContextService::class)
+            );
+        });
+
+        $this->app->singleton(\App\Services\FinancialReportService::class, function () {
+            return new \App\Services\FinancialReportService();
+        });
+
         $this->app->singleton(\App\Services\AccountingIntegrationService::class, function ($app) {
             return new \App\Services\AccountingIntegrationService(
-                $app->make(\App\Services\AuditLogService::class)
+                $app->make(\App\Services\AuditLogService::class),
+                $app->make(\App\Services\GeneralLedgerService::class),
+                $app->make(\App\Services\ChartOfAccountsService::class)
             );
         });
 

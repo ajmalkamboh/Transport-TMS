@@ -2,17 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\ChartOfAccount;
 use App\Models\FuelEntry;
 use App\Models\JobCard;
+use App\Models\JournalVoucher;
 use App\Models\OwnerPayment;
 use App\Models\OwnerSettlement;
 use App\Models\TripExpense;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class AccountingIntegrationService
 {
     public function __construct(
-        protected AuditLogService $auditLog
+        protected AuditLogService $auditLog,
+        protected ?GeneralLedgerService $generalLedger = null,
+        protected ?ChartOfAccountsService $coaService = null
     ) {}
 
     /**
@@ -54,6 +59,46 @@ class AccountingIntegrationService
     }
 
     /**
+     * Post Fuel Entry to General Ledger.
+     */
+    public function postFuelAccounting(FuelEntry $entry, ?User $user = null): ?JournalVoucher
+    {
+        if (!$this->generalLedger) {
+            return null;
+        }
+
+        $payload = $this->buildFuelAccountingPayload($entry);
+        $items = [];
+
+        foreach ($payload['entries'] as $e) {
+            $items[] = [
+                'account_code' => strtok($e['account_code'], '-'),
+                'debit' => $e['debit'],
+                'credit' => $e['credit'],
+                'description' => $e['description'],
+                'vehicle_id' => $entry->vehicle_id,
+                'trip_id' => $entry->trip_id,
+                'fuel_supplier_id' => $entry->fuel_supplier_id,
+            ];
+        }
+
+        return $this->generalLedger->postVoucher([
+            'company_id' => $entry->company_id,
+            'branch_id' => $entry->branch_id,
+            'voucher_date' => $entry->entry_date->toDateString(),
+            'voucher_type' => JournalVoucher::TYPE_JOURNAL,
+            'source_module' => 'fuel_entry',
+            'source_id' => $entry->id,
+            'idempotency_key' => $payload['idempotency_key'],
+            'reference_number' => $entry->entry_number,
+            'narration' => "Fuel Purchase & Issue {$entry->entry_number} ({$entry->quantity_liters} Liters)",
+            'trip_id' => $entry->trip_id,
+            'vehicle_id' => $entry->vehicle_id,
+            'items' => $items,
+        ], $user);
+    }
+
+    /**
      * Build financial transaction payload for posted trip expense voucher.
      */
     public function buildTripExpenseAccountingPayload(TripExpense $expense): array
@@ -72,7 +117,7 @@ class AccountingIntegrationService
             'entries' => [
                 [
                     'account_type' => 'EXPENSE',
-                    'account_code' => "5200-TRIP-{$expense->expense_category}",
+                    'account_code' => $expense->expense_category === 'driver_allowance' ? '5210-DRIVER-ALLOWANCES' : '5200-TRIP-EXPENSES',
                     'description' => ucfirst(str_replace('_', ' ', $expense->expense_category)),
                     'debit' => (float) $expense->amount,
                     'credit' => 0.00,
@@ -88,6 +133,45 @@ class AccountingIntegrationService
                 ],
             ],
         ];
+    }
+
+    /**
+     * Post Trip Expense to General Ledger.
+     */
+    public function postTripExpenseAccounting(TripExpense $expense, ?User $user = null): ?JournalVoucher
+    {
+        if (!$this->generalLedger) {
+            return null;
+        }
+
+        $payload = $this->buildTripExpenseAccountingPayload($expense);
+        $items = [];
+
+        foreach ($payload['entries'] as $e) {
+            $items[] = [
+                'account_code' => strtok($e['account_code'], '-'),
+                'debit' => $e['debit'],
+                'credit' => $e['credit'],
+                'description' => $e['description'],
+                'trip_id' => $expense->trip_id,
+                'vehicle_id' => $expense->vehicle_id,
+            ];
+        }
+
+        return $this->generalLedger->postVoucher([
+            'company_id' => $expense->company_id,
+            'branch_id' => $expense->branch_id,
+            'voucher_date' => $expense->expense_date->toDateString(),
+            'voucher_type' => JournalVoucher::TYPE_JOURNAL,
+            'source_module' => 'trip_expense',
+            'source_id' => $expense->id,
+            'idempotency_key' => $payload['idempotency_key'],
+            'reference_number' => $expense->voucher_number,
+            'narration' => "Trip Expense {$expense->voucher_number} - {$expense->expense_category}",
+            'trip_id' => $expense->trip_id,
+            'vehicle_id' => $expense->vehicle_id,
+            'items' => $items,
+        ], $user);
     }
 
     /**
@@ -109,14 +193,14 @@ class AccountingIntegrationService
             'entries' => [
                 [
                     'account_type' => 'EXPENSE',
-                    'account_code' => '5300-VEHICLE-REPAIR-MAINTENANCE',
+                    'account_code' => '5400-VEHICLE-MAINTENANCE',
                     'description' => "Parts & Repairs - Vehicle {$jobCard->vehicle?->registration_number}",
                     'debit' => (float) $jobCard->parts_total_cost,
                     'credit' => 0.00,
                 ],
                 [
                     'account_type' => 'EXPENSE',
-                    'account_code' => '5310-WORKSHOP-LABOUR-CHARGES',
+                    'account_code' => '5400-VEHICLE-MAINTENANCE',
                     'description' => "Technician / Workshop Labour - Vehicle {$jobCard->vehicle?->registration_number}",
                     'debit' => (float) $jobCard->labour_charges,
                     'credit' => 0.00,
@@ -132,6 +216,45 @@ class AccountingIntegrationService
                 ],
             ],
         ];
+    }
+
+    /**
+     * Post Maintenance Job Card to General Ledger.
+     */
+    public function postMaintenanceAccounting(JobCard $jobCard, ?User $user = null): ?JournalVoucher
+    {
+        if (!$this->generalLedger) {
+            return null;
+        }
+
+        $payload = $this->buildMaintenanceAccountingPayload($jobCard);
+        $items = [];
+
+        foreach ($payload['entries'] as $e) {
+            if ($e['debit'] > 0 || $e['credit'] > 0) {
+                $items[] = [
+                    'account_code' => strtok($e['account_code'], '-'),
+                    'debit' => $e['debit'],
+                    'credit' => $e['credit'],
+                    'description' => $e['description'],
+                    'vehicle_id' => $jobCard->vehicle_id,
+                ];
+            }
+        }
+
+        return $this->generalLedger->postVoucher([
+            'company_id' => $jobCard->company_id,
+            'branch_id' => $jobCard->branch_id,
+            'voucher_date' => $payload['transaction_date'],
+            'voucher_type' => JournalVoucher::TYPE_JOURNAL,
+            'source_module' => 'maintenance_job_card',
+            'source_id' => $jobCard->id,
+            'idempotency_key' => $payload['idempotency_key'],
+            'reference_number' => $jobCard->job_card_number,
+            'narration' => "Maintenance Workshop Job Card {$jobCard->job_card_number}",
+            'vehicle_id' => $jobCard->vehicle_id,
+            'items' => $items,
+        ], $user);
     }
 
     /**
@@ -155,7 +278,7 @@ class AccountingIntegrationService
         if ($settlement->fuel_deduction > 0) {
             $entries[] = [
                 'account_type' => 'ASSET_CONTRA',
-                'account_code' => '1160-FUEL-ADVANCE-RECOVERY',
+                'account_code' => '1160-FUEL-ADVANCE-CLEARING',
                 'description' => "Fuel supplied by company deduction",
                 'debit' => 0.00,
                 'credit' => (float) $settlement->fuel_deduction,
@@ -165,7 +288,7 @@ class AccountingIntegrationService
         if ($settlement->repair_deduction > 0) {
             $entries[] = [
                 'account_type' => 'EXPENSE_RECOVERY',
-                'account_code' => '5290-MAINTENANCE-REPAIR-RECOVERY',
+                'account_code' => '5400-VEHICLE-MAINTENANCE',
                 'description' => "Repairs borne by company recovery",
                 'debit' => 0.00,
                 'credit' => (float) $settlement->repair_deduction,
@@ -185,7 +308,7 @@ class AccountingIntegrationService
         if ($settlement->penalty_deduction > 0) {
             $entries[] = [
                 'account_type' => 'INCOME',
-                'account_code' => '4900-PENALTIES-AND-CLAIMS-INCOME',
+                'account_code' => '4900-PENALTIES-INCOME',
                 'description' => "Contract penalty deduction",
                 'debit' => 0.00,
                 'credit' => (float) $settlement->penalty_deduction,
@@ -195,7 +318,7 @@ class AccountingIntegrationService
         if ($settlement->other_deductions > 0) {
             $entries[] = [
                 'account_type' => 'LIABILITY_CLEARING',
-                'account_code' => '2190-OTHER-DEDUCTIONS-CLEARING',
+                'account_code' => '2100-AP-CLEARING',
                 'description' => "Other approved deductions",
                 'debit' => 0.00,
                 'credit' => (float) $settlement->other_deductions,
@@ -231,6 +354,48 @@ class AccountingIntegrationService
     }
 
     /**
+     * Post Owner Settlement to General Ledger.
+     */
+    public function postOwnerSettlementAccounting(OwnerSettlement $settlement, ?User $user = null): ?JournalVoucher
+    {
+        if (!$this->generalLedger) {
+            return null;
+        }
+
+        $payload = $this->buildOwnerSettlementAccountingPayload($settlement);
+        $items = [];
+
+        foreach ($payload['entries'] as $e) {
+            if ($e['debit'] > 0 || $e['credit'] > 0) {
+                $items[] = [
+                    'account_code' => strtok($e['account_code'], '-'),
+                    'debit' => $e['debit'],
+                    'credit' => $e['credit'],
+                    'description' => $e['description'],
+                    'vehicle_owner_id' => $settlement->vehicle_owner_id,
+                    'vehicle_id' => $settlement->vehicle_id,
+                    'trip_id' => $settlement->trip_id,
+                ];
+            }
+        }
+
+        return $this->generalLedger->postVoucher([
+            'company_id' => $settlement->company_id,
+            'branch_id' => $settlement->branch_id,
+            'voucher_date' => $settlement->settlement_date->toDateString(),
+            'voucher_type' => JournalVoucher::TYPE_JOURNAL,
+            'source_module' => 'owner_settlement',
+            'source_id' => $settlement->id,
+            'idempotency_key' => $payload['idempotency_key'],
+            'reference_number' => $settlement->settlement_number,
+            'narration' => "Vehicle Owner Settlement {$settlement->settlement_number} - Owner: {$settlement->owner?->name}",
+            'trip_id' => $settlement->trip_id,
+            'vehicle_id' => $settlement->vehicle_id,
+            'items' => $items,
+        ], $user);
+    }
+
+    /**
      * Build financial transaction payload for owner payment.
      */
     public function buildOwnerPaymentAccountingPayload(OwnerPayment $payment): array
@@ -256,7 +421,7 @@ class AccountingIntegrationService
                 ],
                 [
                     'account_type' => 'ASSET',
-                    'account_code' => $payment->payment_method === 'cash' ? '1010-CASH-IN-HAND' : '1020-BANK-ACCOUNT',
+                    'account_code' => $payment->payment_method === 'cash' ? '1010-CASH-IN-HAND' : '1020-BANK-ACCOUNTS',
                     'description' => "Disbursement via {$payment->payment_method} ({$payment->payment_reference})",
                     'debit' => 0.00,
                     'credit' => (float) $payment->amount,
@@ -264,5 +429,42 @@ class AccountingIntegrationService
             ],
         ];
     }
-}
 
+    /**
+     * Post Owner Payment to General Ledger.
+     */
+    public function postOwnerPaymentAccounting(OwnerPayment $payment, ?User $user = null): ?JournalVoucher
+    {
+        if (!$this->generalLedger) {
+            return null;
+        }
+
+        $payload = $this->buildOwnerPaymentAccountingPayload($payment);
+        $items = [];
+
+        foreach ($payload['entries'] as $e) {
+            $items[] = [
+                'account_code' => strtok($e['account_code'], '-'),
+                'debit' => $e['debit'],
+                'credit' => $e['credit'],
+                'description' => $e['description'],
+                'vehicle_owner_id' => $payment->vehicle_owner_id,
+            ];
+        }
+
+        $voucherType = $payment->payment_method === 'cash' ? JournalVoucher::TYPE_CASH_PAYMENT : JournalVoucher::TYPE_BANK_PAYMENT;
+
+        return $this->generalLedger->postVoucher([
+            'company_id' => $payment->company_id,
+            'branch_id' => $payment->branch_id,
+            'voucher_date' => $payment->payment_date->toDateString(),
+            'voucher_type' => $voucherType,
+            'source_module' => 'owner_payment',
+            'source_id' => $payment->id,
+            'idempotency_key' => $payload['idempotency_key'],
+            'reference_number' => $payment->payment_number,
+            'narration' => "Disbursement to Vehicle Owner {$payment->owner?->name} - Ref: {$payment->payment_number}",
+            'items' => $items,
+        ], $user);
+    }
+}

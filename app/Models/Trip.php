@@ -178,6 +178,16 @@ class Trip extends Model
             ?->driver;
     }
 
+    public function getVehicleAttribute(): ?Vehicle
+    {
+        return $this->primaryVehicle();
+    }
+
+    public function getDriverAttribute(): ?Driver
+    {
+        return $this->primaryDriver();
+    }
+
     public function isOperationallyCompleted(): bool
     {
         return in_array($this->trip_status, [
