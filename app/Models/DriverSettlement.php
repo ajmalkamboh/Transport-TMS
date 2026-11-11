@@ -84,3 +84,4 @@ class DriverSettlement extends Model
         $this->save();
     }
 }
+

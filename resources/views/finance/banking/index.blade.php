@@ -10,3 +10,4 @@
 
 <livewire:finance.bank-manager />
 @endsection
+

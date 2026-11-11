@@ -123,3 +123,4 @@ class JournalVoucher extends Model
         return $this->status === self::STATUS_REVERSED;
     }
 }
+

@@ -10,3 +10,4 @@
 
 <livewire:finance.general-ledger-manager />
 @endsection
+

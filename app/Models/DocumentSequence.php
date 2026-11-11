@@ -29,6 +29,13 @@ class DocumentSequence extends Model
     public const TYPE_JOB_CARD = 'job_card';
     public const TYPE_DRIVER_SETTLEMENT = 'driver_settlement';
     public const TYPE_CONTRA_VOUCHER = 'contra_voucher';
+    public const TYPE_PURCHASE_REQUISITION = 'purchase_requisition';
+    public const TYPE_GOODS_RECEIPT = 'goods_receipt';
+    public const TYPE_SUPPLIER_BILL = 'supplier_bill';
+    public const TYPE_PURCHASE_RETURN = 'purchase_return';
+    public const TYPE_STOCK_TRANSFER = 'stock_transfer';
+    public const TYPE_STOCK_ADJUSTMENT = 'stock_adjustment';
+    public const TYPE_SUPPLIER_PAYMENT = 'supplier_payment';
 
     public const CORE_ELEVEN_TYPES = [
         self::TYPE_QUOTATION => ['label' => 'Freight Quotation', 'default_prefix' => 'QT'],
@@ -60,6 +67,13 @@ class DocumentSequence extends Model
         self::TYPE_JOB_CARD => ['label' => 'Workshop Job Card', 'default_prefix' => 'JC'],
         self::TYPE_DRIVER_SETTLEMENT => ['label' => 'Driver Voyage Settlement', 'default_prefix' => 'DS'],
         self::TYPE_CONTRA_VOUCHER => ['label' => 'Bank / Cash Contra Voucher', 'default_prefix' => 'CV'],
+        self::TYPE_PURCHASE_REQUISITION => ['label' => 'Purchase Requisition', 'default_prefix' => 'PR'],
+        self::TYPE_GOODS_RECEIPT => ['label' => 'Goods Receipt Note (GRN)', 'default_prefix' => 'GRN'],
+        self::TYPE_SUPPLIER_BILL => ['label' => 'Supplier Bill / Invoice', 'default_prefix' => 'BILL'],
+        self::TYPE_PURCHASE_RETURN => ['label' => 'Purchase Return / Debit Note', 'default_prefix' => 'PRT'],
+        self::TYPE_STOCK_TRANSFER => ['label' => 'Inter-Warehouse Stock Transfer', 'default_prefix' => 'ST'],
+        self::TYPE_STOCK_ADJUSTMENT => ['label' => 'Stock Adjustment & Count', 'default_prefix' => 'ADJ'],
+        self::TYPE_SUPPLIER_PAYMENT => ['label' => 'Supplier Payment Voucher', 'default_prefix' => 'SPAY'],
     ];
 
     protected $fillable = [

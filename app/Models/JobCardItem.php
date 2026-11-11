@@ -16,12 +16,15 @@ class JobCardItem extends Model
     protected $fillable = [
         'company_id',
         'job_card_id',
+        'inventory_item_id',
+        'warehouse_id',
         'part_name',
         'part_number',
         'quantity',
         'unit_cost',
         'total_cost',
         'is_inventory_item',
+        'issued_by',
         'notes',
     ];
 
@@ -36,5 +39,19 @@ class JobCardItem extends Model
     {
         return $this->belongsTo(JobCard::class);
     }
-}
 
+    public function inventoryItem(): BelongsTo
+    {
+        return $this->belongsTo(InventoryItem::class, 'inventory_item_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function issuedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'issued_by');
+    }
+}

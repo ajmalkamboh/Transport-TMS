@@ -156,7 +156,7 @@ class GeneralLedgerService
                 'trip_id' => $data['trip_id'] ?? null,
                 'vehicle_id' => $data['vehicle_id'] ?? null,
                 'reference_number' => $data['reference_number'] ?? null,
-                'narration' => $data['narration'] ?? null,
+                'narration' => $data['narration'] ?? $data['description'] ?? 'General Journal Entry',
                 'created_by' => $user?->id ?? $data['created_by'] ?? null,
                 'posted_by' => $user?->id ?? $data['posted_by'] ?? null,
                 'posted_at' => now(),

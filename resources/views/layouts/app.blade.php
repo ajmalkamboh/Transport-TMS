@@ -210,6 +210,37 @@
                                     </div>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Inventory & Procurement</div>
+                                    <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
+                                </div>
+                                <a class="nav-link {{ request()->routeIs('inventory.items*') ? 'active' : '' }}" href="{{ route('inventory.items') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-boxes"></span></span>
+                                        <span class="nav-link-text ps-1">Inventory Masters</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('inventory.stocks*') ? 'active' : '' }}" href="{{ route('inventory.stocks') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-warehouse"></span></span>
+                                        <span class="nav-link-text ps-1">Warehouse Stocks</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('inventory.procurement*') ? 'active' : '' }}" href="{{ route('inventory.procurement') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-shopping-cart"></span></span>
+                                        <span class="nav-link-text ps-1">Procurement & Bills</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link {{ request()->routeIs('inventory.ledger*') ? 'active' : '' }}" href="{{ route('inventory.ledger') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-history"></span></span>
+                                        <span class="nav-link-text ps-1">Stock Ledger</span>
+                                    </div>
+                                </a>
+                            </li>
                             @endif
 
                             @if(auth()->user()->isSuperAdmin())

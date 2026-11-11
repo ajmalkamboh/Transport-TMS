@@ -89,3 +89,4 @@ class CustomerPayment extends Model
         return $this->payment_type === self::TYPE_CUSTOMER_ADVANCE;
     }
 }
+

@@ -88,3 +88,4 @@ class JournalVoucherItem extends Model
         return $this->entry_type === 'credit';
     }
 }
+

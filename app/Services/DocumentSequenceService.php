@@ -13,6 +13,23 @@ class DocumentSequenceService
     ) {}
 
     /**
+     * Convenient alias for generating sequence numbers with company and branch parameters.
+     */
+    public function getNextDocumentNumber(
+        int $companyId,
+        string $documentType,
+        ?int $branchId = null,
+        ?string $prefix = null
+    ): string {
+        return $this->getNextSequenceNumber(
+            documentType: $documentType,
+            prefix: $prefix,
+            explicitCompanyId: $companyId,
+            explicitBranchId: $branchId
+        );
+    }
+
+    /**
      * Generate the next atomic sequence number for any of the 11 document types.
      * Guaranteed safe against concurrent race conditions via pessimistic row locking (SELECT ... FOR UPDATE).
      *

@@ -42,3 +42,4 @@ class CustomerPaymentAllocation extends Model
         return $this->belongsTo(User::class, 'allocated_by');
     }
 }
+

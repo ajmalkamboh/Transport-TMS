@@ -10,3 +10,4 @@
 
 <livewire:finance.chart-of-accounts-manager />
 @endsection
+

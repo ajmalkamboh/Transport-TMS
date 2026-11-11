@@ -57,3 +57,4 @@ class BankAccount extends Model
         return $this->hasMany(BankReconciliation::class, 'bank_account_id');
     }
 }
+

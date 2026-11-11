@@ -30,10 +30,12 @@ class ChartOfAccount extends Model
     public const CODE_ACCOUNTS_RECEIVABLE = '1100';
     public const CODE_DRIVER_ADVANCE_CLEARING = '1150';
     public const CODE_FUEL_ADVANCE_CLEARING = '1160';
+    public const CODE_INVENTORY_SPARES = '1300';
     public const CODE_FLEET_VEHICLES = '1500';
     public const CODE_ACCUMULATED_DEPRECIATION = '1590';
     
     public const CODE_AP_FUEL_SUPPLIERS = '2100';
+    public const CODE_AP_TRADE_SUPPLIERS = '2110';
     public const CODE_AP_WORKSHOPS = '2120';
     public const CODE_AP_VEHICLE_OWNERS = '2150';
     public const CODE_CUSTOMER_ADVANCES = '2200';
@@ -51,6 +53,7 @@ class ChartOfAccount extends Model
     public const CODE_DRIVER_ALLOWANCES = '5210';
     public const CODE_ATTACHED_TRUCK_HIRE = '5300';
     public const CODE_VEHICLE_MAINTENANCE = '5400';
+    public const CODE_INVENTORY_WRITE_OFF = '5490';
     
     public const CODE_DEPRECIATION_EXPENSE = '6100';
     public const CODE_ADMIN_EXPENSES = '6200';
@@ -104,3 +107,4 @@ class ChartOfAccount extends Model
         return $this->normal_balance === self::BALANCE_CREDIT;
     }
 }
+

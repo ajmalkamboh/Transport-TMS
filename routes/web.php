@@ -71,6 +71,14 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/settlements', fn() => view('finance.settlements.index'))->name('settlements');
         });
 
+        // Inventory, Warehouses & Procurement Management
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/items', fn() => view('inventory.items.index'))->name('items');
+            Route::get('/stocks', fn() => view('inventory.stocks.index'))->name('stocks');
+            Route::get('/procurement', fn() => view('inventory.procurement.index'))->name('procurement');
+            Route::get('/ledger', fn() => view('inventory.ledger.index'))->name('ledger');
+        });
+
         // Professional Document Printing Gateway
         Route::prefix('print')->name('print.')->group(function () {
             Route::get('/quotation/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'quotation'])->name('quotation');
@@ -92,6 +100,9 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/journal-voucher/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'journalVoucher'])->name('journal-voucher');
             Route::get('/driver-settlement/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'driverSettlement'])->name('driver-settlement');
             Route::get('/trip-profitability/{tripId}', [\App\Http\Controllers\PrintDocumentController::class, 'tripProfitability'])->name('trip-profitability');
+            Route::get('/purchase-order/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'purchaseOrder'])->name('purchase-order');
+            Route::get('/goods-receipt/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'goodsReceipt'])->name('goods-receipt');
+            Route::get('/stock-transfer/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'stockTransfer'])->name('stock-transfer');
         });
 
         // Organizational Configuration & Settings

@@ -10,3 +10,4 @@
 
 <livewire:finance.financial-report-manager />
 @endsection
+

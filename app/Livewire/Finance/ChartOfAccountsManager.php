@@ -162,3 +162,4 @@ class ChartOfAccountsManager extends Component
         return view('livewire.finance.chart-of-accounts-manager', compact('accounts', 'counts'));
     }
 }
+

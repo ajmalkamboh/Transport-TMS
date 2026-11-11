@@ -128,3 +128,4 @@ class CustomerInvoice extends Model
         return in_array($this->status, [self::STATUS_POSTED, self::STATUS_PARTIALLY_PAID, self::STATUS_PAID]);
     }
 }
+

@@ -66,6 +66,16 @@ class ChartOfAccountsService
                 'description' => 'Fuel card balances and fuel issued to attached fleet for future recovery',
             ],
             [
+                'account_code' => ChartOfAccount::CODE_INVENTORY_SPARES,
+                'account_name' => 'Spare Parts & Tyres Inventory',
+                'account_type' => ChartOfAccount::TYPE_ASSET,
+                'account_group' => 'current_asset',
+                'normal_balance' => ChartOfAccount::BALANCE_DEBIT,
+                'is_system' => true,
+                'is_reconcilable' => false,
+                'description' => 'Capitalized spare parts, tyres, lubricants, filters, and workshop consumables stock in warehouses',
+            ],
+            [
                 'account_code' => ChartOfAccount::CODE_FLEET_VEHICLES,
                 'account_name' => 'Company-Owned Fleet Vehicles',
                 'account_type' => ChartOfAccount::TYPE_ASSET,
@@ -96,6 +106,16 @@ class ChartOfAccountsService
                 'is_system' => true,
                 'is_reconcilable' => false,
                 'description' => 'Trade payables owed to PSO, Shell, Total, and credit fuel stations',
+            ],
+            [
+                'account_code' => ChartOfAccount::CODE_AP_TRADE_SUPPLIERS,
+                'account_name' => 'Accounts Payable - Trade & Parts Suppliers',
+                'account_type' => ChartOfAccount::TYPE_LIABILITY,
+                'account_group' => 'current_liability',
+                'normal_balance' => ChartOfAccount::BALANCE_CREDIT,
+                'is_system' => true,
+                'is_reconcilable' => false,
+                'description' => 'Trade payables owed to spare parts distributors, tyre manufacturers, and equipment vendors',
             ],
             [
                 'account_code' => ChartOfAccount::CODE_AP_WORKSHOPS,
@@ -243,6 +263,16 @@ class ChartOfAccountsService
                 'is_reconcilable' => false,
                 'description' => 'Vehicle maintenance repairs, lubricants, filter changes, and tyres',
             ],
+            [
+                'account_code' => ChartOfAccount::CODE_INVENTORY_WRITE_OFF,
+                'account_name' => 'Inventory Wastage, Damage & Write-offs',
+                'account_type' => ChartOfAccount::TYPE_EXPENSE,
+                'account_group' => 'direct_operating_cost',
+                'normal_balance' => ChartOfAccount::BALANCE_DEBIT,
+                'is_system' => true,
+                'is_reconcilable' => false,
+                'description' => 'Losses from spare parts shrinkage, transit damage, spoilage, and physical count deficits',
+            ],
 
             // ADMINISTRATIVE & OVERHEAD EXPENSES (6000 - 6999)
             [
@@ -291,3 +321,4 @@ class ChartOfAccountsService
             ->first();
     }
 }
+

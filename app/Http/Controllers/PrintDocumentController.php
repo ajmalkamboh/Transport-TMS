@@ -202,5 +202,35 @@ class PrintDocumentController extends Controller
 
         return view('print.trip-profitability', compact('trip', 'report'));
     }
+
+    public function purchaseOrder(int $id)
+    {
+        $order = \App\Models\PurchaseOrder::withoutGlobalScopes()
+            ->with(['company', 'branch', 'supplier', 'warehouse', 'items.item.primaryUom'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($order);
+
+        return view('print.purchase-order', compact('order'));
+    }
+
+    public function goodsReceipt(int $id)
+    {
+        $grn = \App\Models\GoodsReceiptNote::withoutGlobalScopes()
+            ->with(['company', 'branch', 'supplier', 'warehouse', 'purchaseOrder', 'items.item.primaryUom'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($grn);
+
+        return view('print.goods-receipt', compact('grn'));
+    }
+
+    public function stockTransfer(int $id)
+    {
+        $transfer = \App\Models\StockTransfer::withoutGlobalScopes()
+            ->with(['company', 'fromWarehouse', 'toWarehouse', 'items.item.primaryUom', 'dispatcher', 'receiver'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($transfer);
+
+        return view('print.stock-transfer', compact('transfer'));
+    }
 }
 

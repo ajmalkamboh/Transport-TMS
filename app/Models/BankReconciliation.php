@@ -54,3 +54,4 @@ class BankReconciliation extends Model
         return $this->status === self::STATUS_RECONCILED && abs($this->difference) < 0.01;
     }
 }
+

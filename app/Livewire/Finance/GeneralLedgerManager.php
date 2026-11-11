@@ -198,3 +198,4 @@ class GeneralLedgerManager extends Component
         return view('livewire.finance.general-ledger-manager', compact('vouchers', 'accounts', 'branches'));
     }
 }
+
