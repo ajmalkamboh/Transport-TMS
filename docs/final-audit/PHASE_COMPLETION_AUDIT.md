@@ -155,3 +155,4 @@
 | **11** | BI Reports & Dashboards | COMPLETE | 14 | 84 | None | **GREEN** |
 | **12** | Telematics, PWA & Security | COMPLETE | 9 | 96 | None | **GREEN** |
 | **TOTAL** | **Full System Scope** | **COMPLETE** | **158** | **1,042** | **0** | **GREEN** |
+

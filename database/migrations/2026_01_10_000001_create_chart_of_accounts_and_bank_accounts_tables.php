@@ -94,7 +94,7 @@ return new class extends Migration
             
             $table->timestamps();
 
-            $table->index(['company_id', 'bank_account_id', 'statement_date']);
+            $table->index(['company_id', 'bank_account_id', 'statement_date'], 'bank_recon_company_bank_idx');
         });
     }
 

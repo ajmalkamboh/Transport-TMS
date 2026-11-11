@@ -57,3 +57,4 @@ Having verified all technical, commercial, financial, and security acceptance cr
 - *SaaS Application Security Auditor*
 - *Financial Systems & Forensic Accounting Auditor*
 - *Lead QA & Automation Engineer*
+

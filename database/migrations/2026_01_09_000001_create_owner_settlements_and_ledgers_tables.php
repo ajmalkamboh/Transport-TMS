@@ -100,8 +100,8 @@ return new class extends Migration
             $table->string('description', 255);
             $table->timestamps();
 
-            $table->index(['company_id', 'reference_type', 'reference_id']);
-            $table->index(['owner_settlement_id', 'deduction_type']);
+            $table->index(['company_id', 'reference_type', 'reference_id'], 'os_deductions_ref_idx');
+            $table->index(['owner_settlement_id', 'deduction_type'], 'os_deductions_type_idx');
         });
 
         // 3. Owner Payments Table

@@ -126,8 +126,8 @@ return new class extends Migration
             
             $table->timestamps();
 
-            $table->index(['company_id', 'customer_payment_id']);
-            $table->index(['company_id', 'customer_invoice_id']);
+            $table->index(['company_id', 'customer_payment_id'], 'cpa_company_payment_idx');
+            $table->index(['company_id', 'customer_invoice_id'], 'cpa_company_invoice_idx');
         });
 
         // 5. Driver Settlements (Trip Advances vs Allowances & Expenses)

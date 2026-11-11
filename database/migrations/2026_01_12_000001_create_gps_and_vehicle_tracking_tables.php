@@ -111,7 +111,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['company_id', 'trip_id', 'deviation_started_at']);
+            $table->index(['company_id', 'trip_id', 'deviation_started_at'], 'trd_company_trip_dev_idx');
         });
     }
 
