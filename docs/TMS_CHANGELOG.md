@@ -138,3 +138,4 @@ All notable changes, module additions, architectural updates, and bug fixes for 
 - Multi-branch depot hierarchy with branch codes and localized operational settings.
 - Role-Based Access Control (RBAC) with granular permissions.
 - Multi-tenant data isolation via `BelongsToCompany` trait and global query scopes.
+
