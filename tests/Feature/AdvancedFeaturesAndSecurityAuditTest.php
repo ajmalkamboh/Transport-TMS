@@ -539,6 +539,15 @@ class AdvancedFeaturesAndSecurityAuditTest extends TestCase
         $stlRes->assertStatus(200);
         $stlRes->assertSee('STL-MLK-001');
 
+        // Settlement Detail (Authorized)
+        $detailRes = $this->get(route('portal.owner.settlement.detail', $mySettlement->id));
+        $detailRes->assertStatus(200);
+        $detailRes->assertSee('STL-MLK-001');
+
+        // Trips List
+        $tripsRes = $this->get(route('portal.owner.trips'));
+        $tripsRes->assertStatus(200);
+
         // IDOR Attack Simulation: Attempt to view another owner's settlement
         $otherOwner = VehicleOwner::create([
             'company_id' => $this->company->id,

@@ -34,7 +34,9 @@
                 @forelse($settlements as $stl)
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 font-mono font-bold text-indigo-600">
-                            {{ $stl->settlement_number }}
+                            <a href="{{ route('portal.owner.settlement.detail', $stl->id) }}" class="hover:underline">
+                                {{ $stl->settlement_number }}
+                            </a>
                         </td>
                         <td class="px-4 py-3 text-gray-600">
                             {{ \Carbon\Carbon::parse($stl->settlement_date)->format('M d, Y') }}

@@ -126,6 +126,11 @@ class OwnerSettlement extends Model
         return $this->hasMany(OwnerSettlementDeduction::class, 'owner_settlement_id');
     }
 
+    public function deductions(): HasMany
+    {
+        return $this->deductionItems();
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(OwnerPayment::class, 'owner_settlement_id');
