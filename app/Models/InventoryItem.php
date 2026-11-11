@@ -88,3 +88,4 @@ class InventoryItem extends Model
         return $this->reorder_level > 0 && $this->total_stock_available <= $this->reorder_level;
     }
 }
+

@@ -79,6 +79,13 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/ledger', fn() => view('inventory.ledger.index'))->name('ledger');
         });
 
+        // Comprehensive TMS Reports & Business Intelligence
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', fn() => view('reports.index'))->name('index');
+            Route::get('/export', [\App\Http\Controllers\ReportExportController::class, 'exportCsv'])->name('export');
+            Route::get('/print', [\App\Http\Controllers\ReportExportController::class, 'printReport'])->name('print');
+        });
+
         // Professional Document Printing Gateway
         Route::prefix('print')->name('print.')->group(function () {
             Route::get('/quotation/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'quotation'])->name('quotation');

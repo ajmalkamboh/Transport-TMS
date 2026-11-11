@@ -59,3 +59,4 @@ class PurchaseRequisition extends Model
         return $this->hasMany(PurchaseRequisitionItem::class);
     }
 }
+

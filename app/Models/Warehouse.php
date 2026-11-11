@@ -72,3 +72,4 @@ class Warehouse extends Model
         return $this->hasMany(StockAdjustment::class);
     }
 }
+

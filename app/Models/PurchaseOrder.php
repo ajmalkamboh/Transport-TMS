@@ -80,3 +80,4 @@ class PurchaseOrder extends Model
         return $this->hasMany(GoodsReceiptNote::class);
     }
 }
+

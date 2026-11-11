@@ -78,3 +78,4 @@ class PurchaseReturn extends Model
         return $this->hasMany(PurchaseReturnItem::class);
     }
 }
+

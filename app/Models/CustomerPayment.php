@@ -69,6 +69,16 @@ class CustomerPayment extends Model
         return $this->belongsTo(CustomerInvoice::class, 'customer_invoice_id');
     }
 
+    public function getPaymentDateAttribute(): mixed
+    {
+        return $this->receipt_date;
+    }
+
+    public function setPaymentDateAttribute($value): void
+    {
+        $this->attributes['receipt_date'] = $value;
+    }
+
     public function bankAccount(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class, 'bank_account_id');

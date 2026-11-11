@@ -70,3 +70,4 @@ class StockAdjustment extends Model
         return $this->hasMany(StockAdjustmentItem::class);
     }
 }
+

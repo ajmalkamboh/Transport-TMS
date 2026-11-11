@@ -10,3 +10,4 @@
 
 <livewire:inventory.warehouse-stock-manager />
 @endsection
+

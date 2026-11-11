@@ -18,6 +18,8 @@ class Consignment extends Model
     public const STATUS_BOOKED = 'booked';
     public const STATUS_AT_ORIGIN_HUB = 'at_origin_hub';
     public const STATUS_DISPATCHED_IN_TRANSIT = 'dispatched_in_transit';
+    public const STATUS_DISPATCHED = 'dispatched_in_transit';
+    public const STATUS_IN_TRANSIT = 'dispatched_in_transit';
     public const STATUS_AT_DESTINATION_HUB = 'at_destination_hub';
     public const STATUS_OUT_FOR_DELIVERY = 'out_for_delivery';
     public const STATUS_DELIVERED = 'delivered';

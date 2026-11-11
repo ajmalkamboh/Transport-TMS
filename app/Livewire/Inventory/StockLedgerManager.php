@@ -67,3 +67,4 @@ class StockLedgerManager extends Component
         ]);
     }
 }
+

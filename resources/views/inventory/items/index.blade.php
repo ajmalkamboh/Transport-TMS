@@ -10,3 +10,4 @@
 
 <livewire:inventory.inventory-item-manager />
 @endsection
+

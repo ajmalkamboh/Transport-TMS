@@ -41,3 +41,4 @@ class UnitOfMeasurement extends Model
         return $this->hasMany(UomConversion::class, 'to_uom_id');
     }
 }
+

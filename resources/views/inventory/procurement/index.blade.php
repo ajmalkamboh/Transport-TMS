@@ -10,3 +10,4 @@
 
 <livewire:inventory.procurement-manager />
 @endsection
+

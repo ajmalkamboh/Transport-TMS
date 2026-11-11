@@ -22,6 +22,7 @@ class Trip extends Model
     public const STATUS_IN_TRANSIT = 'in_transit';
     public const STATUS_DELIVERED = 'delivered';
     public const STATUS_OPERATIONALLY_COMPLETED = 'operationally_completed';
+    public const STATUS_COMPLETED = 'operationally_completed';
     public const STATUS_CLOSED = 'closed';
     public const STATUS_CANCELLED = 'cancelled';
 
@@ -212,5 +213,15 @@ class Trip extends Model
         $this->total_packages_count = $allocations->sum('assigned_quantity');
         $this->total_weight_tons = round($allocations->sum('weight_kg') / 1000, 2);
         $this->save();
+    }
+
+    public function getStatusAttribute(): string
+    {
+        return $this->attributes['trip_status'] ?? self::STATUS_PLANNED;
+    }
+
+    public function setStatusAttribute($value): void
+    {
+        $this->attributes['trip_status'] = $value;
     }
 }

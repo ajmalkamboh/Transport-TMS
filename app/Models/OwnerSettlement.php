@@ -19,6 +19,7 @@ class OwnerSettlement extends Model
     public const STATUS_SUBMITTED = 'submitted';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_POSTED = 'posted';
+    public const STATUS_CONFIRMED = 'posted';
     public const STATUS_PAID = 'paid';
     public const STATUS_PARTIALLY_PAID = 'partially_paid';
     public const STATUS_REVERSED = 'reversed';
@@ -50,9 +51,11 @@ class OwnerSettlement extends Model
         'fuel_deduction',
         'repair_deduction',
         'advance_deduction',
+        'advances',
         'penalty_deduction',
         'other_deductions',
         'total_deductions',
+        'approved_deductions',
         'additional_charges',
         'net_payable',
         'paid_amount',
@@ -217,6 +220,26 @@ class OwnerSettlement extends Model
         }
 
         $this->save();
+    }
+
+    public function getApprovedDeductionsAttribute(): float
+    {
+        return (float) ($this->attributes['total_deductions'] ?? 0);
+    }
+
+    public function setApprovedDeductionsAttribute($value): void
+    {
+        $this->attributes['total_deductions'] = $value;
+    }
+
+    public function getAdvancesAttribute(): float
+    {
+        return (float) ($this->attributes['advance_deduction'] ?? 0);
+    }
+
+    public function setAdvancesAttribute($value): void
+    {
+        $this->attributes['advance_deduction'] = $value;
     }
 }
 

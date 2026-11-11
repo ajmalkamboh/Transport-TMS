@@ -307,3 +307,4 @@ class WarehouseStockManager extends Component
         ]);
     }
 }
+

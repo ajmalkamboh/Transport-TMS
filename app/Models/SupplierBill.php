@@ -84,3 +84,4 @@ class SupplierBill extends Model
         return $this->hasMany(SupplierPayment::class);
     }
 }
+

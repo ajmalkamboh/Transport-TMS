@@ -75,3 +75,4 @@ class GoodsReceiptNote extends Model
         return $this->hasMany(SupplierBill::class);
     }
 }
+

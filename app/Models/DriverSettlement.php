@@ -27,9 +27,12 @@ class DriverSettlement extends Model
         'settlement_number',
         'settlement_date',
         'total_advances',
+        'advance_amount',
         'driver_allowance',
         'out_of_pocket_expenses',
+        'approved_expenses_amount',
         'net_payable',
+        'net_balance_amount',
         'net_recoverable',
         'status',
         'journal_voucher_id',
@@ -82,6 +85,36 @@ class DriverSettlement extends Model
         }
 
         $this->save();
+    }
+
+    public function getAdvanceAmountAttribute(): float
+    {
+        return (float) ($this->attributes['total_advances'] ?? 0);
+    }
+
+    public function setAdvanceAmountAttribute($value): void
+    {
+        $this->attributes['total_advances'] = $value;
+    }
+
+    public function getApprovedExpensesAmountAttribute(): float
+    {
+        return (float) ($this->attributes['out_of_pocket_expenses'] ?? 0);
+    }
+
+    public function setApprovedExpensesAmountAttribute($value): void
+    {
+        $this->attributes['out_of_pocket_expenses'] = $value;
+    }
+
+    public function getNetBalanceAmountAttribute(): float
+    {
+        return (float) ($this->attributes['net_payable'] ?? 0);
+    }
+
+    public function setNetBalanceAmountAttribute($value): void
+    {
+        $this->attributes['net_payable'] = $value;
     }
 }
 

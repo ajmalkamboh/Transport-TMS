@@ -49,3 +49,4 @@ class GoodsReceiptNoteItem extends Model
         return $this->belongsTo(PurchaseOrderItem::class, 'purchase_order_item_id');
     }
 }
+

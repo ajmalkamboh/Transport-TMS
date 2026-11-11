@@ -21,6 +21,8 @@ class CustomerInvoice extends Model
     public const STATUS_POSTED = 'posted';
     public const STATUS_PAID = 'paid';
     public const STATUS_PARTIALLY_PAID = 'partially_paid';
+    public const STATUS_UNPAID = 'unpaid';
+    public const STATUS_PARTIAL = 'partially_paid';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_REVERSED = 'reversed';
 

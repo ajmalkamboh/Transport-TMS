@@ -36,8 +36,10 @@ class FuelEntry extends Model
         'trip_id',
         'fuel_type',
         'quantity_liters',
+        'fuel_quantity_liters',
         'rate_per_liter',
         'total_amount',
+        'total_cost',
         'payment_method',
         'payment_status',
         'odometer_km',
@@ -108,6 +110,26 @@ class FuelEntry extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function getTotalCostAttribute(): float
+    {
+        return (float) ($this->attributes['total_amount'] ?? 0);
+    }
+
+    public function setTotalCostAttribute($value): void
+    {
+        $this->attributes['total_amount'] = $value;
+    }
+
+    public function getFuelQuantityLitersAttribute(): float
+    {
+        return (float) ($this->attributes['quantity_liters'] ?? 0);
+    }
+
+    public function setFuelQuantityLitersAttribute($value): void
+    {
+        $this->attributes['quantity_liters'] = $value;
     }
 }
 

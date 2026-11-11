@@ -282,3 +282,4 @@ class InventoryItemManager extends Component
         ]);
     }
 }
+

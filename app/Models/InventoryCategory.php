@@ -31,3 +31,4 @@ class InventoryCategory extends Model
         return $this->hasMany(InventoryItem::class, 'category_id');
     }
 }
+

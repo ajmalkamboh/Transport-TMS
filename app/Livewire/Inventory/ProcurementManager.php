@@ -392,3 +392,4 @@ class ProcurementManager extends Component
         ]);
     }
 }
+

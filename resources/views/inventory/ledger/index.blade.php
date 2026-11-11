@@ -10,3 +10,4 @@
 
 <livewire:inventory.stock-ledger-manager />
 @endsection
+

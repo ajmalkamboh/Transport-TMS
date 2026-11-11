@@ -50,3 +50,4 @@ class PurchaseOrderItem extends Model
         return max(0, (float) $this->quantity_ordered - (float) $this->quantity_received);
     }
 }
+

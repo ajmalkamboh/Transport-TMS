@@ -115,3 +115,4 @@ return new class extends Migration
         Schema::dropIfExists('stock_ledger_entries');
     }
 };
+

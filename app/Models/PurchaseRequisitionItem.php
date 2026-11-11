@@ -37,3 +37,4 @@ class PurchaseRequisitionItem extends Model
         return $this->belongsTo(InventoryItem::class, 'inventory_item_id');
     }
 }
+
