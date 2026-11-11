@@ -148,6 +148,16 @@ class Trip extends Model
         return $this->hasMany(TripExpense::class);
     }
 
+    public function ownerSettlements(): HasMany
+    {
+        return $this->hasMany(OwnerSettlement::class);
+    }
+
+    public function latestOwnerSettlement(): ?OwnerSettlement
+    {
+        return $this->ownerSettlements()->latest('id')->first();
+    }
+
     public function primaryVehicle(): ?Vehicle
     {
         return $this->resources()

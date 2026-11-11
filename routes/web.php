@@ -60,6 +60,11 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/expenses', fn() => view('operations.expenses.index'))->name('expenses');
         });
 
+        // Finance & Owner Settlements
+        Route::prefix('finance')->name('finance.')->group(function () {
+            Route::get('/settlements', fn() => view('finance.settlements.index'))->name('settlements');
+        });
+
         // Professional Document Printing Gateway
         Route::prefix('print')->name('print.')->group(function () {
             Route::get('/quotation/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'quotation'])->name('quotation');
@@ -73,6 +78,9 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/fuel-slip/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'fuelSlip'])->name('fuel-slip');
             Route::get('/expense-voucher/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'expenseVoucher'])->name('expense-voucher');
             Route::get('/job-card/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'jobCard'])->name('job-card');
+            Route::get('/owner-settlement/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerSettlement'])->name('owner-settlement');
+            Route::get('/owner-payment/{id}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerPayment'])->name('owner-payment');
+            Route::get('/owner-ledger/{ownerId}', [\App\Http\Controllers\PrintDocumentController::class, 'ownerLedger'])->name('owner-ledger');
         });
 
         // Organizational Configuration & Settings

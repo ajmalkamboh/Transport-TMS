@@ -311,6 +311,38 @@ class Company extends Model
     }
 
     /**
+     * Owner commercial contracts.
+     */
+    public function ownerContracts(): HasMany
+    {
+        return $this->hasMany(OwnerContract::class);
+    }
+
+    /**
+     * Owner settlements.
+     */
+    public function ownerSettlements(): HasMany
+    {
+        return $this->hasMany(OwnerSettlement::class);
+    }
+
+    /**
+     * Owner payments.
+     */
+    public function ownerPayments(): HasMany
+    {
+        return $this->hasMany(OwnerPayment::class);
+    }
+
+    /**
+     * Owner financial ledgers.
+     */
+    public function ownerLedgers(): HasMany
+    {
+        return $this->hasMany(OwnerLedger::class);
+    }
+
+    /**
      * Company financial years.
      */
     public function financialYears(): HasMany

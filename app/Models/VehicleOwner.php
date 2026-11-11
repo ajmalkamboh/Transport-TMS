@@ -72,6 +72,44 @@ class VehicleOwner extends Model
         return $this->morphMany(FleetDocument::class, 'documentable');
     }
 
+    /**
+     * Settlements generated for this owner.
+     */
+    public function settlements(): HasMany
+    {
+        return $this->hasMany(OwnerSettlement::class, 'vehicle_owner_id')->orderByDesc('settlement_date');
+    }
+
+    /**
+     * Payments issued to this owner.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(OwnerPayment::class, 'vehicle_owner_id')->orderByDesc('payment_date');
+    }
+
+    /**
+     * Complete financial ledger entries.
+     */
+    public function ledger(): HasMany
+    {
+        return $this->hasMany(OwnerLedger::class, 'vehicle_owner_id');
+    }
+
+    /**
+     * Get current outstanding ledger balance (credit = amount company owes to owner).
+     */
+    public function getCurrentBalance(): float
+    {
+        $lastEntry = OwnerLedger::withoutGlobalScopes()
+            ->where('company_id', $this->company_id)
+            ->where('vehicle_owner_id', $this->id)
+            ->orderByDesc('id')
+            ->first();
+
+        return $lastEntry ? (float) $lastEntry->running_balance : 0.00;
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';

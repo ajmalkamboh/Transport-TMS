@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Consignment;
+use App\Models\OwnerPayment;
+use App\Models\OwnerSettlement;
 use App\Models\Quotation;
+use App\Models\VehicleOwner;
+use App\Services\OwnerLedgerService;
 use App\Services\TenantAuthorizationService;
 use Illuminate\Http\Request;
 
@@ -112,6 +116,39 @@ class PrintDocumentController extends Controller
         $this->tenantAuth->validateTenantOwnership($jobCard);
 
         return view('print.job-card', compact('jobCard'));
+    }
+
+    public function ownerSettlement(int $id)
+    {
+        $settlement = OwnerSettlement::withoutGlobalScopes()
+            ->with(['company', 'branch', 'owner', 'vehicle', 'trip', 'contract', 'deductionItems', 'payments', 'preparedByUser', 'approvedByUser'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($settlement);
+
+        return view('print.owner-settlement', compact('settlement'));
+    }
+
+    public function ownerPayment(int $id)
+    {
+        $payment = OwnerPayment::withoutGlobalScopes()
+            ->with(['company', 'branch', 'owner', 'settlement', 'createdByUser'])
+            ->findOrFail($id);
+        $this->tenantAuth->validateTenantOwnership($payment);
+
+        return view('print.owner-payment', compact('payment'));
+    }
+
+    public function ownerLedger(Request $request, int $ownerId)
+    {
+        $owner = VehicleOwner::withoutGlobalScopes()->with(['company', 'vehicles'])->findOrFail($ownerId);
+        $this->tenantAuth->validateTenantOwnership($owner);
+
+        $fromDate = $request->query('from');
+        $toDate = $request->query('to');
+
+        $ledgerSummary = app(OwnerLedgerService::class)->getOwnerLedgerSummary($owner, $fromDate, $toDate);
+
+        return view('print.owner-ledger', compact('owner', 'ledgerSummary', 'fromDate', 'toDate'));
     }
 }
 

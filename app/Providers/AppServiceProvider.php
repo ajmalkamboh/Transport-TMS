@@ -149,6 +149,18 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(\App\Services\AuditLogService::class)
             );
         });
+
+        $this->app->singleton(\App\Services\OwnerLedgerService::class, function () {
+            return new \App\Services\OwnerLedgerService();
+        });
+
+        $this->app->singleton(\App\Services\OwnerSettlementService::class, function ($app) {
+            return new \App\Services\OwnerSettlementService(
+                $app->make(\App\Services\DocumentSequenceService::class),
+                $app->make(\App\Services\OwnerLedgerService::class),
+                $app->make(\App\Services\AuditLogService::class)
+            );
+        });
     }
 
     /**

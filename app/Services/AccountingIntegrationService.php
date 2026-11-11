@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\FuelEntry;
 use App\Models\JobCard;
+use App\Models\OwnerPayment;
+use App\Models\OwnerSettlement;
 use App\Models\TripExpense;
 use Illuminate\Support\Str;
 
@@ -127,6 +129,137 @@ class AccountingIntegrationService
                     'description' => "Settlement to {$jobCard->workshop_name}",
                     'debit' => 0.00,
                     'credit' => (float) $jobCard->total_cost,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Build financial transaction payload for attached vehicle owner settlement.
+     * Enforces strict financial separation between customer freight revenue and owner freight expense.
+     */
+    public function buildOwnerSettlementAccountingPayload(OwnerSettlement $settlement): array
+    {
+        $grossCost = (float) $settlement->agreed_owner_payable + (float) $settlement->additional_charges;
+
+        $entries = [
+            [
+                'account_type' => 'EXPENSE',
+                'account_code' => '5300-ATTACHED-TRUCK-HIRE-EXPENSE',
+                'description' => "Owner Freight & Hire - Vehicle {$settlement->vehicle?->registration_number} (Trip: {$settlement->trip?->trip_number})",
+                'debit' => $grossCost,
+                'credit' => 0.00,
+            ],
+        ];
+
+        if ($settlement->fuel_deduction > 0) {
+            $entries[] = [
+                'account_type' => 'ASSET_CONTRA',
+                'account_code' => '1160-FUEL-ADVANCE-RECOVERY',
+                'description' => "Fuel supplied by company deduction",
+                'debit' => 0.00,
+                'credit' => (float) $settlement->fuel_deduction,
+            ];
+        }
+
+        if ($settlement->repair_deduction > 0) {
+            $entries[] = [
+                'account_type' => 'EXPENSE_RECOVERY',
+                'account_code' => '5290-MAINTENANCE-REPAIR-RECOVERY',
+                'description' => "Repairs borne by company recovery",
+                'debit' => 0.00,
+                'credit' => (float) $settlement->repair_deduction,
+            ];
+        }
+
+        if ($settlement->advance_deduction > 0) {
+            $entries[] = [
+                'account_type' => 'ASSET_CONTRA',
+                'account_code' => '1150-DRIVER-ADVANCE-CLEARING',
+                'description' => "Trip advance recovery",
+                'debit' => 0.00,
+                'credit' => (float) $settlement->advance_deduction,
+            ];
+        }
+
+        if ($settlement->penalty_deduction > 0) {
+            $entries[] = [
+                'account_type' => 'INCOME',
+                'account_code' => '4900-PENALTIES-AND-CLAIMS-INCOME',
+                'description' => "Contract penalty deduction",
+                'debit' => 0.00,
+                'credit' => (float) $settlement->penalty_deduction,
+            ];
+        }
+
+        if ($settlement->other_deductions > 0) {
+            $entries[] = [
+                'account_type' => 'LIABILITY_CLEARING',
+                'account_code' => '2190-OTHER-DEDUCTIONS-CLEARING',
+                'description' => "Other approved deductions",
+                'debit' => 0.00,
+                'credit' => (float) $settlement->other_deductions,
+            ];
+        }
+
+        // Net Payable Liability
+        $entries[] = [
+            'account_type' => 'LIABILITY',
+            'account_code' => '2150-ACCOUNTS-PAYABLE-VEHICLE-OWNER',
+            'description' => "Net Payable to Owner {$settlement->owner?->name}",
+            'debit' => 0.00,
+            'credit' => (float) $settlement->net_payable,
+        ];
+
+        return [
+            'idempotency_key' => "OWNER-SETTLE-{$settlement->id}-{$settlement->settlement_number}",
+            'transaction_type' => 'OWNER_SETTLEMENT',
+            'company_id' => $settlement->company_id,
+            'branch_id' => $settlement->branch_id,
+            'reference_number' => $settlement->settlement_number,
+            'transaction_date' => $settlement->settlement_date->toDateString(),
+            'vehicle_owner_id' => $settlement->vehicle_owner_id,
+            'vehicle_id' => $settlement->vehicle_id,
+            'trip_id' => $settlement->trip_id,
+            'customer_freight_reference' => (float) $settlement->customer_freight_total,
+            'agreed_gross_payable' => (float) $settlement->agreed_owner_payable,
+            'total_deductions' => (float) $settlement->total_deductions,
+            'additional_charges' => (float) $settlement->additional_charges,
+            'net_payable' => (float) $settlement->net_payable,
+            'entries' => $entries,
+        ];
+    }
+
+    /**
+     * Build financial transaction payload for owner payment.
+     */
+    public function buildOwnerPaymentAccountingPayload(OwnerPayment $payment): array
+    {
+        return [
+            'idempotency_key' => "OWNER-PAY-{$payment->id}-{$payment->payment_number}",
+            'transaction_type' => 'OWNER_PAYMENT',
+            'company_id' => $payment->company_id,
+            'branch_id' => $payment->branch_id,
+            'reference_number' => $payment->payment_number,
+            'transaction_date' => $payment->payment_date->toDateString(),
+            'vehicle_owner_id' => $payment->vehicle_owner_id,
+            'amount' => (float) $payment->amount,
+            'payment_method' => $payment->payment_method,
+            'payment_reference' => $payment->payment_reference ?? $payment->cheque_number,
+            'entries' => [
+                [
+                    'account_type' => 'LIABILITY',
+                    'account_code' => '2150-ACCOUNTS-PAYABLE-VEHICLE-OWNER',
+                    'description' => "Payment to Owner {$payment->owner?->name}",
+                    'debit' => (float) $payment->amount,
+                    'credit' => 0.00,
+                ],
+                [
+                    'account_type' => 'ASSET',
+                    'account_code' => $payment->payment_method === 'cash' ? '1010-CASH-IN-HAND' : '1020-BANK-ACCOUNT',
+                    'description' => "Disbursement via {$payment->payment_method} ({$payment->payment_reference})",
+                    'debit' => 0.00,
+                    'credit' => (float) $payment->amount,
                 ],
             ],
         ];

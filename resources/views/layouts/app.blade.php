@@ -161,6 +161,19 @@
                                     </div>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Finance & Settlements</div>
+                                    <div class="col ps-0"><hr class="mb-0 navbar-vertical-divider" /></div>
+                                </div>
+                                <a class="nav-link {{ request()->routeIs('finance.settlements*') ? 'active' : '' }}" href="{{ route('finance.settlements') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
+                                        <span class="nav-link-text ps-1">Owner Settlements</span>
+                                    </div>
+                                </a>
+                            </li>
                             @endif
 
                             @if(auth()->user()->isSuperAdmin())
